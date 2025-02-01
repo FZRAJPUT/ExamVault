@@ -1,5 +1,11 @@
-import { registerRootComponent } from 'expo';
+import { registerRootComponent } from "expo";
+import App from "./App";
+import StoreContextProvider from "./context/storeContext";
 
-import App from './App';
+let Main = () => (
+  <StoreContextProvider>
+    <App />
+  </StoreContextProvider>
+);
 
-registerRootComponent(App);
+registerRootComponent(Main);

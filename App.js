@@ -1,18 +1,22 @@
-import React from "react";
-import { NavigationContainer } from "@react-navigation/native"; // Main navigation container
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"; // Bottom tab navigator
-import RegisterScreen from "./screens/Register";
+import React, { useContext } from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import RegisterScreen from "./screens/registerScreen/Register";
 import IconIon from "react-native-vector-icons/SimpleLineIcons";
 import IconIonOct from "react-native-vector-icons/Octicons";
-import Upload from "./screens/Upload";
-import LostAndFound from "./screens/LostAndFound";
-import Settings from "./screens/Settings";
-import Search from "./screens/Search";
-import Home from "./screens/Home";
+import Upload from "./screens/uploadScreen/Upload";
+import LostAndFound from "./screens/lostAndFoundScreen/LostAndFound";
+import Settings from "./screens/settingScreen/Settings";
+import Search from "./screens/searchScreen/Search";
+import Home from "./screens/homeScreen/Home";
+import { StoreContext } from "./context/storeContext";
 
 const Tab = createBottomTabNavigator();
 
+
 export default function App() {
+  const {isDarkMode} = useContext(StoreContext);
+
   return (
     <NavigationContainer>
       <Tab.Navigator
@@ -20,7 +24,10 @@ export default function App() {
         screenOptions={{
           headerShown: false,
           tabBarStyle: {
-            backgroundColor: "#000",
+            backgroundColor:isDarkMode ? "#111827" : "#fff",
+            height:60,
+            paddingTop:5,
+            borderColor:isDarkMode ? "#111827" : "#fff"
           },
         }}
       >
@@ -30,10 +37,10 @@ export default function App() {
           options={{
             tabBarLabel: "Home",
             tabBarIcon: ({ color, size }) => (
-              <IconIonOct name="home" size={24} color={color} />
+              <IconIonOct name="home" size={size} color={color} />
             ),
-            tabBarActiveTintColor: "#7579E7",
-            tabBarInactiveTintColor: "#fff",
+            tabBarActiveTintColor: "#4C6FFF",
+            tabBarInactiveTintColor:!isDarkMode ? "#727D73" : "#F5F5F5",
           }}
         />
         <Tab.Screen
@@ -42,10 +49,10 @@ export default function App() {
           options={{
             tabBarLabel: "Search",
             tabBarIcon: ({ color, size }) => (
-              <IconIonOct name="search" size={24} color={color} />
+              <IconIonOct name="search" size={size} color={color} />
             ),
-            tabBarActiveTintColor: "#7579E7",
-            tabBarInactiveTintColor: "#fff",
+            tabBarActiveTintColor: "#4C6FFF",
+            tabBarInactiveTintColor: !isDarkMode ? "#727D73" : "#F5F5F5"
           }}
         />
         <Tab.Screen
@@ -54,10 +61,10 @@ export default function App() {
           options={{
             tabBarLabel: "Upload",
             tabBarIcon: ({ color, size }) => (
-              <IconIonOct name="plus" size={24} color={color} />
+              <IconIon name="plus" size={size} color={color} />
             ),
-            tabBarActiveTintColor: "#7579E7",
-            tabBarInactiveTintColor: "#fff",
+            tabBarActiveTintColor: "#4C6FFF",
+            tabBarInactiveTintColor: !isDarkMode ? "#727D73" : "#F5F5F5",
           }}
         />
         <Tab.Screen
@@ -66,10 +73,10 @@ export default function App() {
           options={{
             tabBarLabel: "Lost&Found",
             tabBarIcon: ({ color, size }) => (
-              <IconIonOct name="image" size={24} color={color} />
+              <IconIonOct name="image" size={size} color={color} />
             ),
-            tabBarActiveTintColor: "#7579E7",
-            tabBarInactiveTintColor: "#fff",
+            tabBarActiveTintColor: "#4C6FFF",
+            tabBarInactiveTintColor: !isDarkMode ? "#727D73" : "#F5F5F5",
           }}
         />
         <Tab.Screen
@@ -78,10 +85,10 @@ export default function App() {
           options={{
             tabBarLabel: "Settings",
             tabBarIcon: ({ color, size }) => (
-              <IconIon name="settings" size={24} color={color} />
+              <IconIon name="settings" size={size} color={color} />
             ),
-            tabBarActiveTintColor: "#7579E7",
-            tabBarInactiveTintColor: "#fff",
+            tabBarActiveTintColor: "#4C6FFF",
+            tabBarInactiveTintColor: !isDarkMode ? "#727D73" : "#F5F5F5",
           }}
         />
       </Tab.Navigator>
