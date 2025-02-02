@@ -34,10 +34,10 @@ const Home = () => {
   }
 
   const featuredPDFs = [
-    { title: "Computer Science Syllabus", type: "syllabus" },
-    { title: "Mathematics PYQs 2022", type: "pyq" },
-    { title: "Physics Syllabus", type: "syllabus" },
-    { title: "Chemistry PYQs 2021", type: "pyq" },
+    { title: "Computer Science PYQs", type: "pyq" },
+    { title: "Machanical PYQs", type: "pyq" },
+    { title: "Civil PYQs", type: "pyq" },
+    { title: "Electrical PYQs", type: "pyq" },
   ]
 
   const availablePDFs = [

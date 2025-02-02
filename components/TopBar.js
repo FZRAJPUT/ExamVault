@@ -1,9 +1,11 @@
 import { Image, StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { useContext } from "react";
+import { useNavigation } from "@react-navigation/native";
 import { StoreContext } from "../context/storeContext";
 
 const TopBar = () => {
   const { isDarkMode } = useContext(StoreContext);
+  const navigation = useNavigation();
 
   const theme = isDarkMode ? darkTheme : lightTheme;
 
@@ -12,7 +14,11 @@ const TopBar = () => {
       style={[styles.container, { backgroundColor: theme.backgroundColor }]}
     >
       <Text style={[styles.logo, { color: theme.textColor }]}>EndSem</Text>
-      <TouchableOpacity >
+      <TouchableOpacity
+        onPress={() => navigation.navigate("Profile")}
+        accessibilityLabel="Go to Profile"
+        accessibilityRole="button"
+      >
         <View style={styles.rightContent}>
           <Image
             source={{

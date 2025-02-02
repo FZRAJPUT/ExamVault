@@ -3,7 +3,7 @@ import React, { useContext, useState } from "react";
 import { Moon, Sun, Bell, Lock, HelpCircle, Info } from "lucide-react-native";
 import { StoreContext } from "../../context/storeContext";
 
-export const Settings = () => {
+export const Settings = ({ navigation }) => {
   const { isDarkMode, setIsDarkMode } = useContext(StoreContext);
   const [isNotificationsEnabled, setIsNotificationsEnabled] = useState(true);
 
@@ -66,7 +66,11 @@ export const Settings = () => {
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: theme.sectionTitleColor }]}>Support</Text>
           {renderSettingItem(<HelpCircle size={24} color={theme.iconColor} />, "Help Center", () => {})}
-          {renderSettingItem(<Info size={24} color={theme.iconColor} />, "About", () => {})}
+          {renderSettingItem(
+            <Info size={24} color={theme.iconColor} />,
+            "About",
+            () => navigation.navigate("About") // Navigate to the About screen
+          )}
         </View>
       </ScrollView>
 
@@ -78,6 +82,7 @@ export const Settings = () => {
 };
 
 export default Settings;
+
 
 const styles = StyleSheet.create({
   container: {

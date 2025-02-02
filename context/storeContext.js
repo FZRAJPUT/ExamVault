@@ -4,31 +4,35 @@ import { Appearance } from "react-native";
 export const StoreContext = createContext(null);
 
 const StoreContextProvider = (props) => {
-    const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
+  const getDeviceTheme = () => {
+    const colorScheme = Appearance.getColorScheme();
+    return colorScheme === "dark" ? true : false;
+  };
 
-    const getDeviceTheme = () => {
-      const colorScheme = Appearance.getColorScheme();
-      return colorScheme === "dark" ? true : false;
-    };
-
-    useEffect(() => {
+  useEffect(() => {
+    setIsDarkMode(getDeviceTheme());
+   
+    const listener = Appearance.addChangeListener(() => {
       setIsDarkMode(getDeviceTheme());
-    }, [])
-    
-    const contextValue = {
-        isDarkMode,
-        setIsDarkMode
-    }
+    });
 
+    return () => {
+      listener.remove();
+    };
+  }, []);
 
+  const contextValue = {
+    isDarkMode,
+    setIsDarkMode
+  };
 
-    return (
-        <StoreContext.Provider value={contextValue}>
-            {props.children}
-        </StoreContext.Provider>
-    )
-
-}
+  return (
+    <StoreContext.Provider value={contextValue}>
+      {props.children}
+    </StoreContext.Provider>
+  );
+};
 
 export default StoreContextProvider;
