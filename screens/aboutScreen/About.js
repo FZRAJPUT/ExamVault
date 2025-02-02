@@ -5,7 +5,6 @@ import { Book, FileText, Users, Star, ExternalLink } from 'lucide-react-native';
 
 const About = () => {
   const { isDarkMode } = useContext(StoreContext);
-
   const theme = isDarkMode ? darkTheme : lightTheme;
 
   const FeatureCard = ({ icon, title, description }) => (
