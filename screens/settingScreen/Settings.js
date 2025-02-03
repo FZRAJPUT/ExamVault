@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   top: {
-    height: 115,
+    height: 100,
     width: "100%",
     flexDirection: "row",
     alignItems: "flex-end",

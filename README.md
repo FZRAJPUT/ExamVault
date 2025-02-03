@@ -1,6 +1,6 @@
-# EndSem
+# StudySync
 
-EndSem is an academic tool designed to provide students with comprehensive syllabi, previous year question papers, and personalized features to enhance their study experience. The app allows users to access syllabi for various courses, practice with past exam papers, and contribute to a community-driven knowledge-sharing platform.
+StudySync is an academic tool designed to provide students with comprehensive syllabi, previous year question papers, and personalized features to enhance their study experience. The app allows users to access syllabi for various courses, practice with past exam papers, and contribute to a community-driven knowledge-sharing platform.
 
 ## Features
 
@@ -12,8 +12,7 @@ EndSem is an academic tool designed to provide students with comprehensive sylla
 
 ## Screenshots
 
-![App Screenshot 1](link_to_screenshot_1)
-![App Screenshot 2](link_to_screenshot_2)
+![App Screenshots](https://drive.google.com/drive/folders/1rj0nseElEKE_y2Rh23vhqthYxX-2VC5P?usp=drive_link)
 
 ## Installation
 
@@ -21,12 +20,12 @@ To run the app locally, follow the steps below:
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/yourusername/endsem.git
+    git clone https://github.com/FZRAJPUT/StudySync.git
     ```
 
 2. Navigate to the project directory:
     ```bash
-    cd endsem
+    cd StudySync
     ```
 
 3. Install dependencies:

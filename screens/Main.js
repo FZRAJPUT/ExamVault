@@ -81,7 +81,7 @@ export default function Main() {
           options={{
             tabBarLabel: "Settings",
             tabBarIcon: ({ color, size }) => (
-              <IconIon name="settings" size={size} color={color} /> // Settings Icon
+              <IconIon name="settings" size={size} color={color} />
             ),
             tabBarActiveTintColor: "#4C6FFF", 
             tabBarInactiveTintColor: !isDarkMode ? "#727D73" : "#F5F5F5",
