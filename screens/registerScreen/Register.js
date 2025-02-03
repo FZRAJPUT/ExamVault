@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,10 +8,10 @@ import {
   SafeAreaView,
   Platform,
 } from "react-native";
-import { Picker } from '@react-native-picker/picker'; // Correct import
-import Icon from "react-native-vector-icons/FontAwesome";
+import { Picker } from "@react-native-picker/picker";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export default function RegisterScreen() {
+export default function RegisterScreen({ navigation }) {
   const [formData, setFormData] = useState({
     fullname: "",
     email: "",
@@ -20,7 +20,23 @@ export default function RegisterScreen() {
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    console.log(formData);
+  };
+
+  useEffect(() => {
+    console.log("Form Data Updated:", formData);
+  }, [formData]); // Log state changes properly
+
+  const handleRegister = async () => {
+    if (!formData.fullname || !formData.email || !formData.branch) {
+      alert("Please fill all fields.");
+      return;
+    }
+
+    // Save registration status in AsyncStorage
+    await AsyncStorage.setItem("isRegistered", "true");
+    
+    // Navigate to Home (Assuming Home = Main)
+    navigation.replace("Main");
   };
 
   return (
@@ -33,7 +49,7 @@ export default function RegisterScreen() {
             <TextInput
               style={styles.input}
               placeholder="Full Name"
-              value={formData.firstName}
+              value={formData.fullname}
               onChangeText={(value) => handleChange("fullname", value)}
             />
           </View>
@@ -52,7 +68,7 @@ export default function RegisterScreen() {
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Select Branch</Text>
             <Picker
-              selectedValue={formData.department}
+              selectedValue={formData.branch}
               style={styles.picker}
               onValueChange={(value) => handleChange("branch", value)}
             >
@@ -63,7 +79,7 @@ export default function RegisterScreen() {
             </Picker>
           </View>
 
-          <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.registerButton}>
+          <TouchableOpacity onPress={handleRegister} style={styles.registerButton}>
             <Text style={styles.registerButtonText}>Continue</Text>
           </TouchableOpacity>
 
@@ -82,8 +98,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    justifyContent: "center", // Center vertically
-    alignItems: "center", // Center horizontally
+    justifyContent: "center",
+    alignItems: "center",
     width: "100%",
   },
   content: {
@@ -95,7 +111,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#000",
     marginBottom: 32,
-    textAlign: "center", // Center the title text
+    textAlign: "center",
   },
   form: {
     width: "100%",
