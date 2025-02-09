@@ -6,7 +6,6 @@ import {
   TextInput,
   TouchableOpacity,
   Image,
-  ScrollView,
   Alert,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
@@ -29,7 +28,6 @@ const UploadScreen = () => {
       allowsEditing: true,
       quality: 1,
     });
-
     if (!result.canceled) {
       setImage(result.assets[0].uri);
     }
@@ -41,7 +39,6 @@ const UploadScreen = () => {
       allowsEditing: true,
       quality: 1,
     });
-
     if (!result.canceled) {
       setImage(result.assets[0].uri);
     }
@@ -63,136 +60,90 @@ const UploadScreen = () => {
   };
 
   return (
-    <ScrollView
-      contentContainerStyle={[styles.container, { backgroundColor: theme.background }]}
-    >
-        <View style={[styles.top, { backgroundColor: theme.topBackgroundColor }]}>
-          <Text style={[styles.headerText, { color: theme.headerTextColor }]}>
-            Upload Lost Items
-          </Text>
-        </View>
-      <View style={styles.centeredContainer}>
-  
-        <View style={styles.imageContainer}>
-          {image ? (
-            <Image source={{ uri: image }} style={styles.image} />
-          ) : (
-            <View
-              style={[
-                styles.placeholderImage,
-                { backgroundColor: theme.placeholderBackground },
-              ]}
-            >
-              <ImageIcon size={50} color={theme.placeholderIcon} />
-              <Text
-                style={[styles.placeholderText, { color: theme.placeholderText }]}
-              >
-                No image selected
-              </Text>
-            </View>
-          )}
-        </View>
-  
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={[styles.button, { backgroundColor: theme.buttonBackground }]}
-            onPress={takePhoto}
-          >
-            <Camera size={24} color={theme.buttonText} />
-            <Text style={[styles.buttonText, { color: theme.buttonText }]}>
-              Take Photo
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.button, { backgroundColor: theme.buttonBackground }]}
-            onPress={pickImage}
-          >
-            <Upload size={24} color={theme.buttonText} />
-            <Text style={[styles.buttonText, { color: theme.buttonText }]}>
-              Upload Image
-            </Text>
-          </TouchableOpacity>
-        </View>
-  
-        <TextInput
-          style={[
-            styles.input,
-            { backgroundColor: theme.inputBackground, color: theme.text },
-          ]}
-          placeholder="Item Name"
-          placeholderTextColor={theme.placeholderText}
-          value={itemName}
-          onChangeText={setItemName}
-        />
-        <TextInput
-          style={[
-            styles.input,
-            { backgroundColor: theme.inputBackground, color: theme.text },
-          ]}
-          placeholder="Location"
-          placeholderTextColor={theme.placeholderText}
-          value={location}
-          onChangeText={setLocation}
-        />
-        <TextInput
-          style={[
-            styles.input,
-            { backgroundColor: theme.inputBackground, color: theme.text },
-          ]}
-          placeholder="Instagram ID"
-          placeholderTextColor={theme.placeholderText}
-          value={instagramId}
-          onChangeText={setInstagramId}
-        />
-        <TextInput
-          style={[
-            styles.input,
-            { backgroundColor: theme.inputBackground, color: theme.text },
-          ]}
-          placeholder="Email ID"
-          placeholderTextColor={theme.placeholderText}
-          value={emailId}
-          onChangeText={setEmailId}
-          keyboardType="email-address"
-        />
-  
-        <TouchableOpacity
-          style={[styles.submitButton, { backgroundColor: theme.primary }]}
-          onPress={handleSubmit}
-        >
-          <Text style={styles.submitButtonText}>Submit</Text>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>      
+      <View style={[styles.top, { backgroundColor: theme.topBackgroundColor }]}>
+        <Text style={[styles.headerText, { color: theme.headerTextColor }]}>Upload Lost Items</Text>
+      </View>
+      
+      <View style={styles.imageContainer}>
+        {image ? (
+          <Image source={{ uri: image }} style={styles.image} />
+        ) : (
+          <View style={[styles.placeholderImage, { backgroundColor: theme.placeholderBackground }]}>            
+            <ImageIcon size={50} color={theme.placeholderIcon} />
+            <Text style={[styles.placeholderText, { color: theme.placeholderText }]}>No image selected</Text>
+          </View>
+        )}
+      </View>
+
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={[styles.button, { backgroundColor: theme.buttonBackground }]} onPress={takePhoto}>
+          <Camera size={24} color={theme.buttonText} />
+          <Text style={[styles.buttonText, { color: theme.buttonText }]}>Take Photo</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.button, { backgroundColor: theme.buttonBackground }]} onPress={pickImage}>
+          <Upload size={24} color={theme.buttonText} />
+          <Text style={[styles.buttonText, { color: theme.buttonText }]}>Upload Image</Text>
         </TouchableOpacity>
       </View>
-    </ScrollView>
-  );  
+
+      <TextInput style={[styles.input, { backgroundColor: theme.inputBackground, color: theme.text }]} placeholder="Item Name" placeholderTextColor={theme.placeholderText} value={itemName} onChangeText={setItemName} />
+      <TextInput style={[styles.input, { backgroundColor: theme.inputBackground, color: theme.text }]} placeholder="Location (fill proper location)" placeholderTextColor={theme.placeholderText} value={location} onChangeText={setLocation} />
+      <TextInput style={[styles.input, { backgroundColor: theme.inputBackground, color: theme.text }]} placeholder="Instagram ID" placeholderTextColor={theme.placeholderText} value={instagramId} onChangeText={setInstagramId} />
+      <TextInput style={[styles.input, { backgroundColor: theme.inputBackground, color: theme.text }]} placeholder="Email ID" placeholderTextColor={theme.placeholderText} value={emailId} onChangeText={setEmailId} keyboardType="email-address" />
+      
+      <TouchableOpacity style={[styles.submitButton, { backgroundColor: theme.primary }]} onPress={handleSubmit}>
+        <Text style={styles.submitButtonText}>Submit</Text>
+      </TouchableOpacity>
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
+    flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    paddingHorizontal: 20,
   },
-  centeredContainer: {
-    width: "90%",
-    alignItems: "center",
-  },
+  top: {
+    height: "100",
+    position: "absolute",
+    backgroundColor: "#fff",
+    width: '112%',
+    top: 0,
+    alignItems: "flex-start",
+    justifyContent: "flex-end",
+    paddingHorizontal: 10,
+    paddingBottom: 15,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
+    zIndex:99
+  },  
   imageContainer: {
+    width: "100%",
+    height: "40%",
     alignItems: "center",
-    marginBottom: 20,
+    justifyContent: "center",
+    marginTop:100,
+    marginBottom:20
   },
   image: {
-    width: 200,
-    height: 200,
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
     borderRadius: 10,
   },
   placeholderImage: {
-    width: 200,
-    height: 200,
-    borderRadius: 10,
+    width: "100%",
+    height: "100%",
     justifyContent: "center",
     alignItems: "center",
+    borderRadius: 10,
   },
+  
   placeholderText: {
     marginTop: 10,
   },
@@ -200,7 +151,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     width: "100%",
-    marginBottom: 20,
+    marginBottom: 10,
   },
   button: {
     flexDirection: "row",
@@ -228,25 +179,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginTop: 10,
-    marginBottom:30
   },
   submitButtonText: {
     color: "#FFFFFF",
     fontWeight: "bold",
-  },
-  top: {
-    height: 100,
-    width: "100%",
-    flexDirection: "row",
-    alignItems: "flex-end",
-    paddingBottom: 15,
-    paddingLeft: 10,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
-    zIndex: 99,
-    marginBottom:90
   },
   headerText: {
     fontSize: 20,
@@ -279,6 +215,8 @@ const darkTheme = {
   buttonText: "#FFFFFF",
   inputBackground: "#374151",
   primary: "#3B82F6",
+  topBackgroundColor: "#111827",
+  headerTextColor: "#F9FAFB"
 };
 
 export default UploadScreen;
