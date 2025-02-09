@@ -20,10 +20,10 @@ export default function Main() {
         screenOptions={{
           headerShown: false,
           tabBarStyle: {
-            backgroundColor: isDarkMode ? "#111827" : "#fff",
-            height: 60,
-            paddingTop: 5,
-            borderColor: isDarkMode ? "#111827" : "#fff", // Border color for tab bar
+            backgroundColor: isDarkMode ? "#000" : "#fff",
+            height: 50,
+            paddingTop: 2,
+            borderColor: isDarkMode ? "#3C3D37" : "#fff",
           },
         }}
       >
@@ -57,7 +57,7 @@ export default function Main() {
           options={{
             tabBarLabel: "Upload",
             tabBarIcon: ({ color, size }) => (
-              <IconIon name="plus" size={size} color={color} /> // Upload Icon
+              <IconIon name="plus" size={size} color={color} />
             ),
             tabBarActiveTintColor: "#4C6FFF", 
             tabBarInactiveTintColor: !isDarkMode ? "#727D73" : "#F5F5F5",

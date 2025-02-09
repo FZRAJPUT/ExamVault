@@ -15,7 +15,7 @@ const Home = () => {
   useEffect(() => {
     checkFirstVisit()
     setIsDarkMode(colorScheme === "dark")
-  }, [colorScheme]) // Added colorScheme to dependencies
+  }, [colorScheme])
 
   const checkFirstVisit = async () => {
     try {
