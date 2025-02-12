@@ -23,6 +23,7 @@ export default function Main() {
             backgroundColor: isDarkMode ? "#000" : "#fff",
             height: 50,
             paddingTop: 2,
+            paddingBottom: 5,
             borderColor: isDarkMode ? "#3C3D37" : "#fff",
           },
         }}
@@ -33,10 +34,10 @@ export default function Main() {
           options={{
             tabBarLabel: "Home",
             tabBarIcon: ({ color, size }) => (
-              <IconIonOct name="home" size={size} color={color} /> // Home Icon
+              <IconIonOct name="home" size={size} color={color} />
             ),
-            tabBarActiveTintColor: "#4C6FFF", // Active icon color
-            tabBarInactiveTintColor: !isDarkMode ? "#727D73" : "#F5F5F5", // Inactive icon color
+            tabBarActiveTintColor: "#4C6FFF",
+            tabBarInactiveTintColor: !isDarkMode ? "#727D73" : "#F5F5F5",
           }}
         />
         <Tab.Screen
@@ -45,7 +46,7 @@ export default function Main() {
           options={{
             tabBarLabel: "Search",
             tabBarIcon: ({ color, size }) => (
-              <IconIonOct name="search" size={size} color={color} /> // Search Icon
+              <IconIonOct name="search" size={size} color={color} />
             ),
             tabBarActiveTintColor: "#4C6FFF", 
             tabBarInactiveTintColor: !isDarkMode ? "#727D73" : "#F5F5F5",
@@ -69,7 +70,7 @@ export default function Main() {
           options={{
             tabBarLabel: "Lost&Found",
             tabBarIcon: ({ color, size }) => (
-              <IconIonOct name="image" size={size} color={color} /> // Lost & Found Icon
+              <IconIonOct name="image" size={size} color={color} />
             ),
             tabBarActiveTintColor: "#4C6FFF", 
             tabBarInactiveTintColor: !isDarkMode ? "#727D73" : "#F5F5F5",

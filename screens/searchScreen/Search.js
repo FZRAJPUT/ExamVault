@@ -91,7 +91,7 @@ const SearchScreen = () => {
 };
 
 const lightTheme = {
-  background: '#F2F9FF',
+  background: '#F8FAFC',
   text: '#333',
   itemBackground: '#fff',
   searchBackground: '#fff',
@@ -102,10 +102,10 @@ const lightTheme = {
 };
 
 const darkTheme = {
-  background: '#1E1E1E',
+  background: '#1F2937',
   text: '#FFF',
-  itemBackground: '#333',
-  searchBackground: '#3C3D37',
+  itemBackground: '#374151',
+  searchBackground: '#374151',
   iconColor: '#BBB',
   placeholderText: '#AAA',
   primary: '#007AFF',
