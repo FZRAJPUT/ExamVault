@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
 
 export default function RegisterScreen({ navigation }) {
   const [formData, setFormData] = useState({
@@ -31,13 +32,29 @@ export default function RegisterScreen({ navigation }) {
       alert("Please fill all fields.");
       return;
     }
+  
+    try {
+      const response = await axios.post("http://192.168.177.149:3000/user/register", formData);
 
-    // Save registration status in AsyncStorage
-    await AsyncStorage.setItem("isRegistered", "true");
-    
-    // Navigate to Home (Assuming Home = Main)
-    navigation.replace("Main");
+      console.log(response.data);
+      
+      // if (response.data.success) {
+      //   // await AsyncStorage.setItem("isRegistered", "true");
+      //   // alert("Registration successful!");
+      //   // navigation.replace("Main");
+      // } else {
+      //   alert(response.data.message || "Registration failed.");
+      // }
+    } catch (error) {
+      // if (error.response?.status === 409) {
+      //   alert("Email is already registered.");
+      // } else {
+        console.log("Error:", error.message);
+        alert("Something went wrong. Please try again.");
+      // }
+    }
   };
+  
 
   return (
     <SafeAreaView style={styles.container}>
@@ -86,7 +103,7 @@ export default function RegisterScreen({ navigation }) {
           <Text style={styles.orText}>or</Text>
 
           <TouchableOpacity style={styles.googleButton}>
-            <Text style={styles.googleButtonText}>Register with Google</Text>
+            <Text style={styles.googleButtonText}>Continue with Google</Text>
           </TouchableOpacity>
         </View>
       </View>

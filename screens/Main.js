@@ -21,7 +21,7 @@ export default function Main() {
           headerShown: false,
           tabBarStyle: {
             backgroundColor: isDarkMode ? "#000" : "#fff",
-            height: 50,
+            height: 60,
             paddingTop: 2,
             paddingBottom: 5,
             borderColor: isDarkMode ? "#3C3D37" : "#fff",

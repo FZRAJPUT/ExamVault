@@ -19,10 +19,10 @@ const App = () => {
     const checkFirstTimeUser = async () => {
       try {
         const isRegistered = await AsyncStorage.getItem("isRegistered");
-        setInitialRoute(isRegistered ? "Register" : "Main");
+        setInitialRoute(!isRegistered ? "Register" : "Register");
       } catch (error) {
         console.error("Error reading AsyncStorage:", error);
-        setInitialRoute("Register"); // Default to Register if there's an error
+        setInitialRoute("Register");
       }
     };
 

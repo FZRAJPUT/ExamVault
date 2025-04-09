@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { View, Text, Image, StyleSheet, ScrollView } from 'react-native';
 import { StoreContext } from '../../context/storeContext';
-import { User, Mail, Phone, MapPin } from 'lucide-react-native';
+import { User, Mail, GraduationCap, MapPin} from 'lucide-react-native';
 
 const Profile = () => {
   const { isDarkMode } = useContext(StoreContext);
@@ -29,7 +29,7 @@ const Profile = () => {
       <View style={styles.profileInfo}>
         <ProfileItem icon={<User size={20} color={theme.iconColor} />} text="John Doe" />
         <ProfileItem icon={<Mail size={20} color={theme.iconColor} />} text="john.doe@example.com" />
-        <ProfileItem icon={<Phone size={20} color={theme.iconColor} />} text="+1 (555) 123-4567" />
+        <ProfileItem icon={<GraduationCap size={20} color={theme.iconColor} />} text="Computer Science and Engineering" />
         <ProfileItem icon={<MapPin size={20} color={theme.iconColor} />} text="San Francisco, CA" />
       </View>
     </ScrollView>
