@@ -36,14 +36,14 @@ export const Settings = ({ navigation }) => {
 
       <ScrollView style={styles.main}>
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: theme.sectionTitleColor }]}>Appearance</Text>
+          {/* <Text style={[styles.sectionTitle, { color: theme.sectionTitleColor }]}>Appearance</Text>
           {renderSettingItem(
             isDarkMode ? <Sun size={24} color={theme.iconColor} /> : <Moon size={24} color={theme.iconColor} />,
             isDarkMode ? "Light Mode" : "Dark Mode",
             toggleDarkMode,
             true,
             isDarkMode
-          )}
+          )} */}
         </View>
 
         <View style={styles.section}>

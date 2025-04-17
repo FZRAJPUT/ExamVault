@@ -17,15 +17,28 @@ const { width, height } = Dimensions.get('window'); // Get device width and heig
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
-  const { userDetails } = useContext(StoreContext);
+  const { setDetails } = useContext(StoreContext);
 
   const handleNext = async () => {
     if (!email) {
-      Alert.alert("Please enter an email.");
+      Alert.alert("Validation Error", "Please enter an email.");
       return;
     }
-    if (userDetails(email)) {
-      navigation.navigate("Main");
+  
+    try {
+      const response = await axios.post(
+        "http://192.168.43.149:3000/user/details",
+        { email }
+      );
+  
+      if (response?.data?.success) {
+        setDetails(response.data.details);
+        navigation.navigate("Main");
+      } else {
+        Alert.alert("Login Failed", response?.data?.message || "Something went wrong.");
+      }
+    } catch (error) {
+      Alert.alert("Network Error", "Failed to connect to server. Please try again.");
     }
   };
 
@@ -72,35 +85,35 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     flex: 1,
-    paddingHorizontal: width * 0.05, // 5% padding from left and right
+    paddingHorizontal: width * 0.05,
     justifyContent: 'center',
   },
   title: {
-    fontSize: width * 0.08, // Adjust font size based on screen width
+    fontSize: width * 0.08,
     fontWeight: 'bold',
     marginBottom: 8,
   },
   subtitle: {
-    fontSize: width * 0.04, // Smaller font size for subtitle
+    fontSize: width * 0.04,
     color: '#666',
     marginBottom: 52,
   },
   input: {
     backgroundColor: '#F0F0F0',
     borderRadius: 8,
-    padding: width * 0.05, // Responsive padding
+    padding: width * 0.05,
     marginBottom: 24,
-    fontSize: width * 0.04, // Adjust font size for input
+    fontSize: width * 0.04,
   },
   nextButton: {
     backgroundColor: '#4C6FFF',
     borderRadius: 8,
-    padding: width * 0.05, // Adjust padding based on screen size
+    padding: width * 0.05,
     alignItems: 'center',
   },
   nextButtonText: {
     color: 'white',
-    fontSize: width * 0.045, // Responsive font size for button text
+    fontSize: width * 0.045,
     fontWeight: '600',
   },
   orText: {

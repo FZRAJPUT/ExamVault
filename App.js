@@ -24,7 +24,7 @@ const App = () => {
         if (userInfo) {
           parsed = JSON.parse(userInfo);
           setInitialRoute(parsed.isRegistered ? "Main" : "Register");
-          userDetails(parsed.email);
+          // userDetails(parsed.email);
         } else {
           setInitialRoute("Register");
         }

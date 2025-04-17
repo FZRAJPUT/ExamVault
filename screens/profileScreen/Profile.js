@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, ScrollView } from 'react-native';
 import { StoreContext } from '../../context/storeContext';
 import { User, Mail, GraduationCap, MapPin} from 'lucide-react-native';
@@ -23,13 +23,13 @@ const Profile = () => {
           style={styles.profileImage}
         />
         <Text style={[styles.name, { color: theme.textColor }]}>{details.fullname}</Text>
-        <Text style={[styles.bio, { color: theme.textSecondaryColor }]}>Computer Science Student</Text>
+        <Text style={[styles.bio, { color: theme.textSecondaryColor }]}>{details.branch=="CSE" ? "Computer Science" : details.branch=="ME" ? "Mechanical Engineering" : details.branch=="CE" ? "Civil Engineering" : "Electrical Engineer"} Student</Text>
       </View>
 
       <View style={styles.profileInfo}>
         <ProfileItem icon={<User size={20} color={theme.iconColor} />} text={details.fullname} />
         <ProfileItem icon={<Mail size={20} color={theme.iconColor} />} text={details.email} />
-        <ProfileItem icon={<GraduationCap size={20} color={theme.iconColor} />} text="Computer Science and Engineering" />
+        <ProfileItem icon={<GraduationCap size={20} color={theme.iconColor} />} text={details.branch=="CSE" ? "Computer Science and Engineering" : details.branch=="ME" ? "Mechanical Engineering" : details.branch=="CE" ? "Civil Engineering" : "Electrical Engineer"} />
         <ProfileItem icon={<MapPin size={20} color={theme.iconColor} />} text="San Francisco, CA" />
       </View>
     </ScrollView>

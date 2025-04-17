@@ -15,7 +15,6 @@ const StoreContextProvider = (props) => {
 
   useEffect(() => {
     setIsDarkMode(getDeviceTheme());
-
     const listener = Appearance.addChangeListener(() => {
       setIsDarkMode(getDeviceTheme());
     });
@@ -25,32 +24,11 @@ const StoreContextProvider = (props) => {
     };
   }, []);
 
-  const userDetails = async (email) => {
-    try {
-      const response = await axios.post(
-        "http://192.168.43.149:3000/user/details",
-        { email }
-      );
-      if (!response.data.success) {
-        Alert.alert(response.data.message);
-        return false;
-      }
-      setDetails(response.data.details);
-      return true;
-    } catch (error) {
-      console.error("Login error:", error);
-      Alert.alert(
-        "Error",
-        error?.response?.data?.message || "Something went wrong."
-      );
-    }
-  };
-
   const contextValue = {
     isDarkMode,
     setIsDarkMode,
-    userDetails,
     details,
+    setDetails
   };
 
   return (

@@ -50,7 +50,6 @@ export default function RegisterScreen({ navigation }) {
             email: formData.email,
           })
         );
-        Alert.alert(response.data.message);
         navigation.replace("Login");
       } else {
         alert("Registration failed. Please try again.");
