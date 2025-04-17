@@ -4,7 +4,7 @@ import { StoreContext } from '../../context/storeContext';
 import { User, Mail, GraduationCap, MapPin} from 'lucide-react-native';
 
 const Profile = () => {
-  const { isDarkMode } = useContext(StoreContext);
+  const { isDarkMode, details } = useContext(StoreContext);
 
   const theme = isDarkMode ? darkTheme : lightTheme;
 
@@ -22,13 +22,13 @@ const Profile = () => {
           source={{ uri: 'https://randomuser.me/api/portraits/men/32.jpg' }}
           style={styles.profileImage}
         />
-        <Text style={[styles.name, { color: theme.textColor }]}>John Doe</Text>
+        <Text style={[styles.name, { color: theme.textColor }]}>{details.fullname}</Text>
         <Text style={[styles.bio, { color: theme.textSecondaryColor }]}>Computer Science Student</Text>
       </View>
 
       <View style={styles.profileInfo}>
-        <ProfileItem icon={<User size={20} color={theme.iconColor} />} text="John Doe" />
-        <ProfileItem icon={<Mail size={20} color={theme.iconColor} />} text="john.doe@example.com" />
+        <ProfileItem icon={<User size={20} color={theme.iconColor} />} text={details.fullname} />
+        <ProfileItem icon={<Mail size={20} color={theme.iconColor} />} text={details.email} />
         <ProfileItem icon={<GraduationCap size={20} color={theme.iconColor} />} text="Computer Science and Engineering" />
         <ProfileItem icon={<MapPin size={20} color={theme.iconColor} />} text="San Francisco, CA" />
       </View>

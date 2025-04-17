@@ -8,27 +8,34 @@ import { StoreContext } from "./context/storeContext";
 import About from "./screens/aboutScreen/About";
 import Register from "./screens/registerScreen/Register";
 import { ActivityIndicator, View } from "react-native";
+import LoginScreen from "./screens/loginScreen/Login";
 
 const Stack = createStackNavigator();
 
 const App = () => {
-  const { isDarkMode } = useContext(StoreContext);
+  const { isDarkMode, userDetails } = useContext(StoreContext);
   const [initialRoute, setInitialRoute] = useState(null);
 
   useEffect(() => {
     const checkFirstTimeUser = async () => {
       try {
-        const isRegistered = await AsyncStorage.getItem("isRegistered");
-        setInitialRoute(!isRegistered ? "Register" : "Register");
+        const userInfo = await AsyncStorage.getItem("userInfo");
+        let parsed = null;
+        if (userInfo) {
+          parsed = JSON.parse(userInfo);
+          setInitialRoute(parsed.isRegistered ? "Main" : "Register");
+          userDetails(parsed.email);
+        } else {
+          setInitialRoute("Register");
+        }
       } catch (error) {
         console.error("Error reading AsyncStorage:", error);
         setInitialRoute("Register");
       }
     };
-
     checkFirstTimeUser();
   }, []);
-
+  
   if (initialRoute === null) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -40,7 +47,11 @@ const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName={initialRoute}>
-        <Stack.Screen name="Main" component={Main} options={{ headerShown: false }} />
+        <Stack.Screen
+          name="Main"
+          component={Main}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen
           name="Profile"
           component={Profile}
@@ -61,7 +72,14 @@ const App = () => {
           name="Register"
           component={Register}
           options={{
-            headerShown:false
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="Login"
+          component={LoginScreen}
+          options={{
+            headerShown: false,
           }}
         />
       </Stack.Navigator>

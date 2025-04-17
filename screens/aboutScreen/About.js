@@ -28,7 +28,7 @@ const About = () => {
   return (
     <ScrollView style={[styles.container, { backgroundColor: theme.backgroundColor }]}>
       <View style={styles.header}>
-        <Text style={[styles.appName, { color: theme.textColor }]}>EndSem</Text>
+        <Text style={[styles.appName, { color: theme.textColor }]}>ExamVault</Text>
         <Text style={[styles.appDescription, { color: theme.textSecondaryColor }]}>
           Your one-stop solution for all academic syllabi and previous year questions
         </Text>
@@ -127,10 +127,10 @@ const styles = StyleSheet.create({
   },
   featureCard: {
     width: '45%',
-    padding: 20,
     borderRadius: 15,
     marginBottom: 20,
     alignItems: 'center',
+    paddingVertical:10
   },
   iconContainer: {
     width: 60,
@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   featureTitle: {
-    fontSize: 18,
+    fontSize: 15,
     fontWeight: '600',
     marginBottom: 10,
     textAlign: 'center',

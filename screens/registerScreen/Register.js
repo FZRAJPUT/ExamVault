@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -7,10 +7,18 @@ import {
   StyleSheet,
   SafeAreaView,
   Platform,
+  Keyboard,
+  TouchableWithoutFeedback,
+  KeyboardAvoidingView,
+  Alert,
+  Dimensions,
+  ScrollView,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+
+const { width, height } = Dimensions.get("window");
 
 export default function RegisterScreen({ navigation }) {
   const [formData, setFormData] = useState({
@@ -23,91 +31,102 @@ export default function RegisterScreen({ navigation }) {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  useEffect(() => {
-    console.log("Form Data Updated:", formData);
-  }, [formData]); // Log state changes properly
-
   const handleRegister = async () => {
     if (!formData.fullname || !formData.email || !formData.branch) {
-      alert("Please fill all fields.");
+      Alert.alert("Please fill all fields.");
       return;
     }
-  
-    try {
-      const response = await axios.post("http://192.168.177.149:3000/user/register", formData);
 
-      console.log(response.data);
-      
-      // if (response.data.success) {
-      //   // await AsyncStorage.setItem("isRegistered", "true");
-      //   // alert("Registration successful!");
-      //   // navigation.replace("Main");
-      // } else {
-      //   alert(response.data.message || "Registration failed.");
-      // }
+    try {
+      const response = await axios.post(
+        "http://192.168.43.149:3000/user/register",
+        formData
+      );
+      if (response.data.success) {
+        await AsyncStorage.setItem(
+          "userInfo",
+          JSON.stringify({
+            isRegistered: true,
+            email: formData.email,
+          })
+        );
+        Alert.alert(response.data.message);
+        navigation.replace("Login");
+      } else {
+        alert("Registration failed. Please try again.");
+      }
     } catch (error) {
-      // if (error.response?.status === 409) {
-      //   alert("Email is already registered.");
-      // } else {
-        console.log("Error:", error.message);
-        alert("Something went wrong. Please try again.");
-      // }
+      const message =
+        error.response?.data?.message || "Something went wrong. Please try again.";
+      Alert.alert(message);
     }
   };
-  
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
-        <Text style={styles.title}>Register</Text>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <SafeAreaView style={styles.container}>
+          <ScrollView contentContainerStyle={styles.scrollContent}>
+            <View style={styles.content}>
+              <Text style={styles.title}>Create account</Text>
+              <Text style={styles.det}>Please enter your details</Text>
 
-        <View style={styles.form}>
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={styles.input}
-              placeholder="Full Name"
-              value={formData.fullname}
-              onChangeText={(value) => handleChange("fullname", value)}
-            />
-          </View>
+              <View style={styles.form}>
+                <View style={styles.inputContainer}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Full Name"
+                    value={formData.fullname}
+                    onChangeText={(value) => handleChange("fullname", value)}
+                  />
+                </View>
 
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={styles.input}
-              placeholder="Email"
-              value={formData.email}
-              onChangeText={(value) => handleChange("email", value)}
-              keyboardType="email-address"
-              autoCapitalize="none"
-            />
-          </View>
+                <View style={styles.inputContainer}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Email"
+                    value={formData.email}
+                    onChangeText={(value) => handleChange("email", value)}
+                    autoCapitalize="none"
+                  />
+                </View>
 
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Select Branch</Text>
-            <Picker
-              selectedValue={formData.branch}
-              style={styles.picker}
-              onValueChange={(value) => handleChange("branch", value)}
-            >
-              <Picker.Item label="CSE" value="CSE" />
-              <Picker.Item label="ME" value="ME" />
-              <Picker.Item label="EE" value="EE" />
-              <Picker.Item label="CE" value="CE" />
-            </Picker>
-          </View>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>Select Branch</Text>
+                  <Picker
+                    selectedValue={formData.branch}
+                    style={styles.picker}
+                    onValueChange={(value) => handleChange("branch", value)}
+                  >
+                    <Picker.Item label="CSE" value="CSE" />
+                    <Picker.Item label="ME" value="ME" />
+                    <Picker.Item label="EE" value="EE" />
+                    <Picker.Item label="CE" value="CE" />
+                  </Picker>
+                </View>
 
-          <TouchableOpacity onPress={handleRegister} style={styles.registerButton}>
-            <Text style={styles.registerButtonText}>Continue</Text>
-          </TouchableOpacity>
+                <TouchableOpacity onPress={handleRegister} style={styles.registerButton}>
+                  <Text style={styles.registerButtonText}>Continue</Text>
+                </TouchableOpacity>
 
-          <Text style={styles.orText}>or</Text>
-
-          <TouchableOpacity style={styles.googleButton}>
-            <Text style={styles.googleButtonText}>Continue with Google</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </SafeAreaView>
+                <View style={styles.loginContainer}>
+                  <Text style={styles.loginText}>Already have an account?</Text>
+                  <TouchableOpacity
+                    style={styles.loginButton}
+                    onPress={() => navigation.navigate("Login")}
+                  >
+                    <Text style={styles.loginButtonText}>Login</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </ScrollView>
+        </SafeAreaView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -115,20 +134,27 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+  },
+  scrollContent: {
+    padding: width * 0.05,
+    flexGrow: 1,
     justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
   },
   content: {
     width: "100%",
-    paddingHorizontal: 24,
   },
   title: {
-    fontSize: 32,
+    fontSize: width * 0.08,
     fontWeight: "700",
     color: "#000",
-    marginBottom: 32,
-    textAlign: "center",
+    textAlign: "left",
+    marginBottom: 5,
+  },
+  det: {
+    fontSize: width * 0.04,
+    fontWeight: "500",
+    marginBottom: 20,
+    textAlign: "left",
   },
   form: {
     width: "100%",
@@ -156,12 +182,14 @@ const styles = StyleSheet.create({
     color: "#000",
   },
   label: {
-    fontSize: 16,
+    fontSize: 14,
     color: "#000",
     marginLeft: 16,
+    marginTop: 8,
   },
   picker: {
     height: 56,
+    width: "100%",
     paddingHorizontal: 16,
   },
   registerButton: {
@@ -202,10 +230,43 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderWidth: 1,
     borderColor: "#e1e1e1",
-    gap: 15,
   },
   googleButtonText: {
     color: "#000",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  loginContainer: {
+    marginTop: 20,
+    alignItems: "center",
+  },
+  loginText: {
+    fontSize: 16,
+    color: "#666",
+    marginBottom:10
+  },
+  loginButton: {
+    width: "100%",
+    height: 56,
+    backgroundColor: "#4C6FFF",
+    borderRadius: 12,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 8,
+    ...Platform.select({
+      ios: {
+        shadowColor: "#4C6FFF",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 8,
+      },
+    }),
+  },
+  loginButtonText: {
+    color: "#fff",
     fontSize: 16,
     fontWeight: "600",
   },

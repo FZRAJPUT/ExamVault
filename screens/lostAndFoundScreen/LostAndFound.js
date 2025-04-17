@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   top: {
-    height: 100,
+    height: 80,
     width: "100%",
     flexDirection: "row",
     alignItems: "flex-end",

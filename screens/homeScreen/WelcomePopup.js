@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -10,9 +10,10 @@ import {
 
 export default function WelcomePopup() {
   const [modalVisible, setModalVisible] = useState(true);
-  const fadeAnim = new Animated.Value(0);
+  const [fadeAnim] = useState(new Animated.Value(0));
 
-  React.useEffect(() => {
+  useEffect(() => {
+    // Fade-in animation
     Animated.timing(fadeAnim, {
       toValue: 1,
       duration: 500,
@@ -20,16 +21,28 @@ export default function WelcomePopup() {
     }).start();
   }, []);
 
+  const handleClose = () => {
+    // Fade-out animation before closing the modal
+    Animated.timing(fadeAnim, {
+      toValue: 0,
+      duration: 500,
+      useNativeDriver: true,
+    }).start();
+
+    // Wait for the animation to complete before hiding the modal
+    setTimeout(() => setModalVisible(false), 500);
+  };
+
   return (
     <Modal
       transparent
       visible={modalVisible}
       animationType="fade"
-      onRequestClose={() => setModalVisible(false)}
+      onRequestClose={handleClose}
     >
       <View style={styles.overlay}>
         <Animated.View style={[styles.popupCard, { opacity: fadeAnim }]}>
-          <Text style={styles.popupTitle}>🎉 Welcome to EndSem! 📚</Text>
+          <Text style={styles.popupTitle}>🎉 Welcome to ExamVault! 📚</Text>
           <Text style={styles.popupMessage}>
             Your one-stop destination for syllabus, question papers, and study materials. 
             Stay ahead in your academics with easy access to everything you need.
@@ -39,7 +52,7 @@ export default function WelcomePopup() {
           </Text>
           <TouchableOpacity
             style={styles.closeButton}
-            onPress={() => setModalVisible(false)}
+            onPress={handleClose}
           >
             <Text style={styles.closeButtonText}>Let's Get Started 🚀</Text>
           </TouchableOpacity>

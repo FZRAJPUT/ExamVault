@@ -1,16 +1,15 @@
-import { StyleSheet, Text, View, ScrollView, Switch, TouchableOpacity } from "react-native";
-import React, { useContext, useState } from "react";
-import { Moon, Sun, Bell, Lock, HelpCircle, Info } from "lucide-react-native";
+import { StyleSheet,Alert, Text, View, ScrollView, Switch, TouchableOpacity } from "react-native";
+import React, { useContext } from "react";
+import { Moon, Sun, HelpCircle, Info, MailIcon, UserRoundPen, LogOut } from "lucide-react-native";
 import { StoreContext } from "../../context/storeContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const Settings = ({ navigation }) => {
   const { isDarkMode, setIsDarkMode } = useContext(StoreContext);
-  const [isNotificationsEnabled, setIsNotificationsEnabled] = useState(true);
 
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
   };
-  const toggleNotifications = () => setIsNotificationsEnabled(!isNotificationsEnabled);
 
   const theme = isDarkMode ? darkTheme : lightTheme;
 
@@ -48,19 +47,13 @@ export const Settings = ({ navigation }) => {
         </View>
 
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: theme.sectionTitleColor }]}>Notifications</Text>
-          {renderSettingItem(
-            <Bell size={24} color={theme.iconColor} />,
-            "Push Notifications",
-            toggleNotifications,
-            true,
-            isNotificationsEnabled
-          )}
+          <Text style={[styles.sectionTitle, { color: theme.sectionTitleColor }]}>Account</Text>
+          {renderSettingItem(<UserRoundPen size={24} color={theme.iconColor} />, "Profile", () => {navigation.navigate("Profile")})}
         </View>
 
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: theme.sectionTitleColor }]}>Security</Text>
-          {renderSettingItem(<Lock size={24} color={theme.iconColor} />, "Change Password", () => {})}
+          {renderSettingItem(<MailIcon size={24} color={theme.iconColor} />, "Change Email", () => {})}
         </View>
 
         <View style={styles.section}>
@@ -70,6 +63,21 @@ export const Settings = ({ navigation }) => {
             <Info size={24} color={theme.iconColor} />,
             "About",
             () => navigation.navigate("About") // Navigate to the About screen
+          )}
+           {renderSettingItem(
+            <LogOut size={24} color={theme.iconColor} />,
+            "Log out",
+            async () => {
+              try {
+                await AsyncStorage.clear();
+                Alert.alert("Logged out", "You have been logged out.");
+                navigation.replace("Login");
+              } catch (error) {
+                Alert.alert("Error", "Failed to log out.");
+                console.error("AsyncStorage clear error:", error);
+              }
+            }
+            
           )}
         </View>
       </ScrollView>
@@ -89,7 +97,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   top: {
-    height: 100,
+    height: 80,
     width: "100%",
     flexDirection: "row",
     alignItems: "flex-end",
@@ -110,7 +118,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   section: {
-    marginBottom: 24,
+    marginBottom: 20,
   },
   sectionTitle: {
     fontSize: 18,

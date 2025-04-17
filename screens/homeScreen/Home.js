@@ -63,7 +63,6 @@ const Home = () => {
 
   return (
     <View style={[styles.container, isDarkMode && styles.darkContainer]}>
-      <TopBar />
       {isFirstVisit && <WelcomePopup />}
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -101,7 +100,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f9f9f9",
-    paddingTop: 80,
+    // paddingTop: 80,
   },
   darkContainer: {
     backgroundColor: "#1F2937",
