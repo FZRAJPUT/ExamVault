@@ -13,10 +13,12 @@ import {
   Alert,
   Dimensions,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import { EXPO_API_URL } from "@env";
 
 const { width, height } = Dimensions.get("window");
 
@@ -26,6 +28,7 @@ export default function RegisterScreen({ navigation }) {
     email: "",
     branch: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -37,27 +40,26 @@ export default function RegisterScreen({ navigation }) {
       return;
     }
 
+    setIsLoading(true);
     try {
-      const response = await axios.post(
-        "http://192.168.43.149:3000/user/register",
-        formData
-      );
+      const response = await axios.post(`${EXPO_API_URL}/user/register`, formData);
       if (response.data.success) {
         await AsyncStorage.setItem(
           "userInfo",
           JSON.stringify({
             isRegistered: true,
-            email: formData.email,
+            details:response.data.details
           })
         );
         navigation.replace("Login");
       } else {
-        alert("Registration failed. Please try again.");
+        Alert.alert("Registration failed", response.data.message || "Please try again.");
       }
     } catch (error) {
-      const message =
-        error.response?.data?.message || "Something went wrong. Please try again.";
+      const message = error.response?.data?.message || "Something went wrong. Please try again.";
       Alert.alert(message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -100,6 +102,7 @@ export default function RegisterScreen({ navigation }) {
                     style={styles.picker}
                     onValueChange={(value) => handleChange("branch", value)}
                   >
+                    <Picker.Item label="Select Branch" value="" />
                     <Picker.Item label="CSE" value="CSE" />
                     <Picker.Item label="ME" value="ME" />
                     <Picker.Item label="EE" value="EE" />
@@ -107,8 +110,16 @@ export default function RegisterScreen({ navigation }) {
                   </Picker>
                 </View>
 
-                <TouchableOpacity onPress={handleRegister} style={styles.registerButton}>
-                  <Text style={styles.registerButtonText}>Continue</Text>
+                <TouchableOpacity
+                  onPress={handleRegister}
+                  style={[styles.registerButton, isLoading && { opacity: 0.6 }]}
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <ActivityIndicator size="small" color="#fff" />
+                  ) : (
+                    <Text style={styles.registerButtonText}>Continue</Text>
+                  )}
                 </TouchableOpacity>
 
                 <View style={styles.loginContainer}>
@@ -116,6 +127,7 @@ export default function RegisterScreen({ navigation }) {
                   <TouchableOpacity
                     style={styles.loginButton}
                     onPress={() => navigation.navigate("Login")}
+                    disabled={isLoading}
                   >
                     <Text style={styles.loginButtonText}>Login</Text>
                   </TouchableOpacity>
@@ -215,26 +227,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
   },
-  orText: {
-    color: "#666",
-    textAlign: "center",
-    marginVertical: 16,
-  },
-  googleButton: {
-    height: 56,
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#e1e1e1",
-  },
-  googleButtonText: {
-    color: "#000",
-    fontSize: 16,
-    fontWeight: "600",
-  },
   loginContainer: {
     marginTop: 20,
     alignItems: "center",
@@ -242,7 +234,7 @@ const styles = StyleSheet.create({
   loginText: {
     fontSize: 16,
     color: "#666",
-    marginBottom:10
+    marginBottom: 10,
   },
   loginButton: {
     width: "100%",

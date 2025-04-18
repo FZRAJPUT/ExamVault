@@ -13,8 +13,9 @@ import LoginScreen from "./screens/loginScreen/Login";
 const Stack = createStackNavigator();
 
 const App = () => {
-  const { isDarkMode, userDetails } = useContext(StoreContext);
+  const { isDarkMode } = useContext(StoreContext);
   const [initialRoute, setInitialRoute] = useState(null);
+  const [isLogin, setIsLogin] = useState(false);
 
   useEffect(() => {
     const checkFirstTimeUser = async () => {
@@ -23,8 +24,9 @@ const App = () => {
         let parsed = null;
         if (userInfo) {
           parsed = JSON.parse(userInfo);
+          setIsLogin(parsed.isRegistered);
+          console.log(parsed.details);
           setInitialRoute(parsed.isRegistered ? "Main" : "Register");
-          // userDetails(parsed.email);
         } else {
           setInitialRoute("Register");
         }
@@ -35,7 +37,7 @@ const App = () => {
     };
     checkFirstTimeUser();
   }, []);
-  
+
   if (initialRoute === null) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -47,42 +49,42 @@ const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName={initialRoute}>
-        <Stack.Screen
-          name="Main"
-          component={Main}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Profile"
-          component={Profile}
-          options={{
-            headerStyle: { backgroundColor: isDarkMode ? "#111827" : "#fff" },
-            headerTintColor: isDarkMode ? "#fff" : "#000",
-          }}
-        />
-        <Stack.Screen
-          name="About"
-          component={About}
-          options={{
-            headerStyle: { backgroundColor: isDarkMode ? "#111827" : "#fff" },
-            headerTintColor: isDarkMode ? "#fff" : "#000",
-          }}
-        />
-        <Stack.Screen
-          name="Register"
-          component={Register}
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="Login"
-          component={LoginScreen}
-          options={{
-            headerShown: false,
-          }}
-        />
-      </Stack.Navigator>
+  <Stack.Screen
+    name="Main"
+    component={Main}
+    options={{ headerShown: false }}
+  />
+  <Stack.Screen
+    name="Profile"
+    component={Profile}
+    options={{
+      headerStyle: {
+        backgroundColor: isDarkMode ? "#111827" : "#fff",
+      },
+      headerTintColor: isDarkMode ? "#fff" : "#000",
+    }}
+  />
+  <Stack.Screen
+    name="About"
+    component={About}
+    options={{
+      headerStyle: {
+        backgroundColor: isDarkMode ? "#111827" : "#fff",
+      },
+      headerTintColor: isDarkMode ? "#fff" : "#000",
+    }}
+  />
+  <Stack.Screen
+    name="Register"
+    component={Register}
+    options={{ headerShown: false }}
+  />
+  <Stack.Screen
+    name="Login"
+    component={LoginScreen}
+    options={{ headerShown: false }}
+  />
+</Stack.Navigator>
     </NavigationContainer>
   );
 };
