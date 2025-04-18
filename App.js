@@ -13,9 +13,8 @@ import LoginScreen from "./screens/loginScreen/Login";
 const Stack = createStackNavigator();
 
 const App = () => {
-  const { isDarkMode } = useContext(StoreContext);
+  const { isDarkMode,setDetails } = useContext(StoreContext);
   const [initialRoute, setInitialRoute] = useState(null);
-  const [isLogin, setIsLogin] = useState(false);
 
   useEffect(() => {
     const checkFirstTimeUser = async () => {
@@ -24,8 +23,7 @@ const App = () => {
         let parsed = null;
         if (userInfo) {
           parsed = JSON.parse(userInfo);
-          setIsLogin(parsed.isRegistered);
-          console.log(parsed.details);
+          setDetails(parsed.details)
           setInitialRoute(parsed.isRegistered ? "Main" : "Register");
         } else {
           setInitialRoute("Register");

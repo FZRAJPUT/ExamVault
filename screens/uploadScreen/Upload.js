@@ -43,19 +43,18 @@ const UploadScreen = () => {
       }
   
       let result = await ImagePicker.launchCameraAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ImagePicker.CameraType.back, // ✅ Updated usage
         allowsEditing: true,
         quality: 1,
       });
   
       if (!result.canceled) {
-        setImage(result.assets[0].uri);
+        setImage(result.assets[0].uri); // assuming you have a state hook setImage
       }
     } catch (error) {
       console.log("Camera Error:", error.message);
     }
   };
-  
   const handleSubmit = () => {
     if (!image || !itemName || !location || !instagramId || !emailId) {
       Alert.alert("Error", "Please fill in all fields and upload an image");
