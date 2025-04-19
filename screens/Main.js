@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import IconIon from "react-native-vector-icons/SimpleLineIcons";
 import IconIonOct from "react-native-vector-icons/Octicons";
@@ -8,11 +8,33 @@ import Settings from "./settingScreen/Settings";
 import Search from "./searchScreen/Search";
 import Home from "./homeScreen/Home";
 import { StoreContext } from "../context/storeContext"; 
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Tab = createBottomTabNavigator();
 
-export default function Main() {
-  const { isDarkMode } = useContext(StoreContext);
+export default function Main({navigation}) {
+  const { isDarkMode, getDetails } = useContext(StoreContext);
+
+  useEffect(() => {
+    const checkFirstTimeUser = async () => {
+      try {
+        const userInfo = await AsyncStorage.getItem("userInfo");
+        let parsed = null;
+        if (userInfo) {
+          parsed = JSON.parse(userInfo);
+          console.log(parsed);
+          getDetails(parsed.email);
+          parsed.isRegistered ? navigation.navigate("Main") : navigation.navigate("Register");
+        } else {
+          navigation.navigate("Login");
+        }
+      } catch (error) {
+        console.error("Error reading AsyncStorage:", error);
+        navigation.navigate("Login");
+      }
+    };
+    checkFirstTimeUser();
+  }, []);
   
   return (
       <Tab.Navigator

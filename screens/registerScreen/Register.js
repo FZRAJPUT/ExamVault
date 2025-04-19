@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   View,
   Text,
@@ -19,6 +19,7 @@ import { Picker } from "@react-native-picker/picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { EXPO_API_URL } from "@env";
+import { StoreContext } from "../../context/storeContext";
 
 const { width, height } = Dimensions.get("window");
 
@@ -29,6 +30,7 @@ export default function RegisterScreen({ navigation }) {
     branch: "",
   });
   const [isLoading, setIsLoading] = useState(false);
+  const {setEmail_otp} = useContext(StoreContext)
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -48,10 +50,11 @@ export default function RegisterScreen({ navigation }) {
           "userInfo",
           JSON.stringify({
             isRegistered: true,
-            details:response.data.details
+            email:formData.email
           })
         );
-        navigation.replace("Login");
+        setEmail_otp(formData.email)
+        navigation.replace("OTP");
       } else {
         Alert.alert("Registration failed", response.data.message || "Please try again.");
       }

@@ -7,19 +7,19 @@ import {
   useColorScheme,
 } from "react-native";
 import { useState, useEffect, useContext } from "react";
-import { FileText, Book, Clock } from "lucide-react-native";
+import { FileText } from "lucide-react-native";
 import WelcomePopup from "./WelcomePopup";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import renderAvailablePDFItem from "./RenderAvailableIPDFtem";
 import { StoreContext } from "../../context/storeContext";
+import AvailablePDFItem from "./RenderAvailableIPDFtem";
 
 const COLORS = {
   lightBg: "#FAF9F6",
   darkBg: "#121212",
   cardLight: "#FFFFFF",
   cardDark: "#1E1E1E",
-  accent1: "#240750",
-  accent2: "#240750", 
+  accent1: "#4a6cf7",
+  accent2: "#4a6cf7",
   accent3: "#FFD93D",
   accent4: "#845EC2",
   accent5: "#2C73D2",
@@ -58,29 +58,17 @@ const Home = () => {
     { title: "Electrical PYQs", type: "pyq" },
   ];
 
-  const availablePDFs = [
-    { title: "M-1 PYQ 2022", type: "pyq", subject: "Mathematics 1" },
-    { title: "M-2 PYQ 2022", type: "pyq", subject: "Mathematics 2" },
-    { title: "M-1 PYQ 2021", type: "pyq", subject: "Mathematics 1" },
-    { title: "M-2 PYQ 2021", type: "pyq", subject: "Mathematics 2" },
-    { title: "Physics PYQ 2022", type: "pyq", subject: "Physics" },
-    { title: "Chemistry PYQ 2022", type: "pyq", subject: "Chemistry" },
-    { title: "DE Syllabus", type: "syllabus", subject: "Digital Electronics" },
-    { title: "DBMS Syllabus", type: "syllabus", subject: "DataBase Management System" },
-  ];
-
   const renderFeaturedPDFItem = (item, index) => (
     <TouchableOpacity
       key={index}
-      style={[
-        styles.featuredPdfItem,
-        {
-          backgroundColor: index % 2 === 0 ? COLORS.accent1 : COLORS.accent2,
-        },
-      ]}
+      style={[styles.featuredPdfItem, {
+        backgroundColor: index % 2 === 0 ? COLORS.accent1 : COLORS.accent2,
+      }]}
     >
       <FileText size={24} color="#fff" />
-      <Text style={[styles.featuredPdfTitle, { color: "#fff" }]}>{item.title}</Text>
+      <Text style={[styles.featuredPdfTitle, { color: "#fff" }]}>
+        {item.title}
+      </Text>
       <Text style={[styles.featuredPdfType, { color: "#fefefe" }]}>
         {item.type === "syllabus" ? "Syllabus" : "PYQ"}
       </Text>
@@ -88,44 +76,27 @@ const Home = () => {
   );
 
   return (
-    <View style={[styles.container, { backgroundColor: isDarkMode ? COLORS.darkBg : COLORS.lightBg }]}>
+    <View
+      style={[styles.container, { backgroundColor: isDarkMode ? COLORS.darkBg : COLORS.lightBg }]}
+    >
       {isFirstVisit && <WelcomePopup />}
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.contentContainer}
-      >
         <View style={styles.header}>
-          <Text style={[styles.sectionTitle, { color: isDarkMode ? COLORS.textDark : COLORS.textLight }]}>
-            Featured PDFs
+          <Text
+            style={[styles.sectionTitle, { color: isDarkMode ? COLORS.textDark : COLORS.textLight }]}
+          >
+            ExamVault
           </Text>
         </View>
-
-        <View style={styles.featuredPdfGrid}>{featuredPDFs.map(renderFeaturedPDFItem)}</View>
-
-        <View style={styles.infoSection}>
-          <View style={styles.infoItem}>
-            <Book size={24} color={isDarkMode ? COLORS.accent3 : COLORS.accent4} />
-            <Text style={[styles.infoText, { color: isDarkMode ? COLORS.textDark : COLORS.textLight }]}>
-              10+ Syllabi
-            </Text>
-          </View>
-          <View style={styles.infoItem}>
-            <Clock size={24} color={isDarkMode ? COLORS.accent3 : COLORS.accent5} />
-            <Text style={[styles.infoText, { color: isDarkMode ? COLORS.textDark : COLORS.textLight }]}>
-              5 Years of PYQs
-            </Text>
-          </View>
+        <View style={styles.featuredPdfGrid}>
+          {featuredPDFs.map(renderFeaturedPDFItem)}
         </View>
 
-        <Text style={[styles.sectionTitle, { color: isDarkMode ? COLORS.textDark : COLORS.textLight }]}>
+        {/* <Text
+          style={[styles.sectionTitle, { color: isDarkMode ? COLORS.textDark : COLORS.textLight }]}
+        >
           All Available PDFs
-        </Text>
-
-        <View style={styles.availablePdfList}>
-          {availablePDFs.map((item, index) => renderAvailablePDFItem(item, index, isDarkMode))}
-        </View>
-      </ScrollView>
+        </Text> */}
+        <AvailablePDFItem />
     </View>
   );
 };
@@ -135,9 +106,7 @@ export default Home;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  contentContainer: {
-    padding: 16,
+    padding: 10,
   },
   header: {
     flexDirection: "row",
@@ -156,18 +125,18 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   featuredPdfItem: {
-    width: "48%",
-    borderRadius: 14,
-    padding: 16,
-    marginBottom: 16,
+    width: "45%", // Reduce width for smaller cards
+    borderRadius: 10, // Slightly smaller corners
+    padding: 10, // Reduced padding
+    marginBottom: 12, // Reduced margin for compactness
     alignItems: "center",
-    elevation: 4,
+    elevation: 3, // Slight shadow
   },
   featuredPdfTitle: {
-    fontSize: 14,
+    fontSize: 11,
     fontWeight: "700",
     textAlign: "center",
-    marginTop: 8,
+    marginTop: 6, // Reduced margin
   },
   featuredPdfType: {
     fontSize: 12,

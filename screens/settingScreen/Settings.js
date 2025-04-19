@@ -1,22 +1,18 @@
 import { StyleSheet,Alert, Text, View, ScrollView, Switch, TouchableOpacity } from "react-native";
 import React, { useContext } from "react";
-import { Moon, Sun, HelpCircle, Info, MailIcon, UserRoundPen, LogOut } from "lucide-react-native";
+import { Moon, Sun, HelpCircle, Info, MailIcon, UserRoundPen, LogOut, Bookmark, Heart } from "lucide-react-native";
 import { StoreContext } from "../../context/storeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const Settings = ({ navigation }) => {
-  const { isDarkMode, setIsDarkMode } = useContext(StoreContext);
-
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
-  };
+  const { isDarkMode } = useContext(StoreContext);
 
   const theme = isDarkMode ? darkTheme : lightTheme;
 
   const renderSettingItem = (icon, title, action, hasSwitch = false, switchValue = false) => (
     <TouchableOpacity style={[styles.settingItem, { borderBottomColor: theme.borderColor }]} onPress={action}>
       {icon}
-      <Text style={[styles.settingText, { color: theme.textColor }]}>{title}</Text>
+      <Text style={[styles.settingText, title === "Log out"? { color: "red" } : {color: theme.textColor}]}>{title}</Text>
       {hasSwitch && (
         <Switch
           value={switchValue}
@@ -34,7 +30,7 @@ export const Settings = ({ navigation }) => {
         <Text style={[styles.headerText, { color: theme.headerTextColor }]}>Settings</Text>
       </View>
 
-      <ScrollView style={styles.main}>
+      {/* <ScrollView style={styles.main}> */}
         <View style={styles.section}>
           {/* <Text style={[styles.sectionTitle, { color: theme.sectionTitleColor }]}>Appearance</Text>
           {renderSettingItem(
@@ -48,24 +44,25 @@ export const Settings = ({ navigation }) => {
 
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: theme.sectionTitleColor }]}>Account</Text>
-          {renderSettingItem(<UserRoundPen size={24} color={theme.iconColor} />, "Profile", () => {navigation.navigate("Profile")})}
+          {renderSettingItem(<UserRoundPen size={24} color={"#711DB0"} />, "Profile", () => {navigation.navigate("Profile")})}
+          {renderSettingItem(<Bookmark size={24} color={"#4a6cf7"} />, "Saved", () => {})}
         </View>
 
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: theme.sectionTitleColor }]}>Security</Text>
-          {renderSettingItem(<MailIcon size={24} color={theme.iconColor} />, "Change Email", () => {})}
+          {renderSettingItem(<MailIcon size={24} color={"#00DFA2"} />, "Change Email", () => {})}
         </View>
 
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: theme.sectionTitleColor }]}>Support</Text>
-          {renderSettingItem(<HelpCircle size={24} color={theme.iconColor} />, "Help Center", () => {})}
+          {renderSettingItem(<HelpCircle size={24} color={"#A149FA"} />, "Help Center", () => {})}
           {renderSettingItem(
-            <Info size={24} color={theme.iconColor} />,
+            <Info size={24} color={"#400D51"} />,
             "About",
             () => navigation.navigate("About") // Navigate to the About screen
           )}
            {renderSettingItem(
-            <LogOut size={24} color={theme.iconColor} />,
+            <LogOut size={24} color={"red"} />,
             "Log out",
             async () => {
               try {
@@ -80,7 +77,7 @@ export const Settings = ({ navigation }) => {
             
           )}
         </View>
-      </ScrollView>
+      {/* </ScrollView> */}
 
       <View style={styles.footer}>
         <Text style={[styles.versionText, { color: theme.versionTextColor }]}>Version 1.0.0</Text>
@@ -115,10 +112,11 @@ const styles = StyleSheet.create({
   },
   main: {
     flex: 1,
-    padding: 16,
+    paddingHorizontal:16
   },
   section: {
-    marginBottom: 20,
+    marginBottom: 18,
+    paddingHorizontal:16
   },
   sectionTitle: {
     fontSize: 18,
@@ -137,7 +135,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   footer: {
-    padding: 16,
+    // padding: 16,
     alignItems: "center",
   },
   versionText: {

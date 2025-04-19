@@ -1,52 +1,22 @@
 import React, { useContext, useEffect, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import Profile from "./screens/profileScreen/Profile";
 import Main from "./screens/Main";
 import { StoreContext } from "./context/storeContext";
 import About from "./screens/aboutScreen/About";
 import Register from "./screens/registerScreen/Register";
-import { ActivityIndicator, View } from "react-native";
 import LoginScreen from "./screens/loginScreen/Login";
+import OtpVerificationScreen from "./screens/optVerifyicationScreen/OtpVerificationScreen";
 
 const Stack = createStackNavigator();
 
 const App = () => {
-  const { isDarkMode,setDetails } = useContext(StoreContext);
-  const [initialRoute, setInitialRoute] = useState(null);
-
-  useEffect(() => {
-    const checkFirstTimeUser = async () => {
-      try {
-        const userInfo = await AsyncStorage.getItem("userInfo");
-        let parsed = null;
-        if (userInfo) {
-          parsed = JSON.parse(userInfo);
-          setDetails(parsed.details)
-          setInitialRoute(parsed.isRegistered ? "Main" : "Register");
-        } else {
-          setInitialRoute("Register");
-        }
-      } catch (error) {
-        console.error("Error reading AsyncStorage:", error);
-        setInitialRoute("Register");
-      }
-    };
-    checkFirstTimeUser();
-  }, []);
-
-  if (initialRoute === null) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
-    );
-  }
+  const { isDarkMode } = useContext(StoreContext);
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName={initialRoute}>
+      <Stack.Navigator initialRouteName={"Main"}>
   <Stack.Screen
     name="Main"
     component={Main}
@@ -80,6 +50,11 @@ const App = () => {
   <Stack.Screen
     name="Login"
     component={LoginScreen}
+    options={{ headerShown: false }}
+  />
+  <Stack.Screen
+    name="OTP"
+    component={OtpVerificationScreen}
     options={{ headerShown: false }}
   />
 </Stack.Navigator>
