@@ -5,7 +5,6 @@ import IconIonOct from "react-native-vector-icons/Octicons";
 import Upload from "./uploadScreen/Upload";
 import LostAndFound from "./lostAndFoundScreen/LostAndFound";
 import Settings from "./settingScreen/Settings";
-import Search from "./searchScreen/Search";
 import Home from "./homeScreen/Home";
 import { StoreContext } from "../context/storeContext"; 
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -22,7 +21,6 @@ export default function Main({navigation}) {
         let parsed = null;
         if (userInfo) {
           parsed = JSON.parse(userInfo);
-          console.log(parsed);
           getDetails(parsed.email);
           parsed.isRegistered ? navigation.navigate("Main") : navigation.navigate("Register");
         } else {
@@ -47,6 +45,7 @@ export default function Main({navigation}) {
             paddingTop: 2,
             paddingBottom: 5,
             borderColor: isDarkMode ? "#3C3D37" : "#fff",
+            position: "fixed",
           },
         }}
       >
@@ -59,18 +58,6 @@ export default function Main({navigation}) {
               <IconIonOct name="home" size={size} color={color} />
             ),
             tabBarActiveTintColor: "#4C6FFF",
-            tabBarInactiveTintColor: !isDarkMode ? "#727D73" : "#F5F5F5",
-          }}
-        />
-        <Tab.Screen
-          name="Search"
-          component={Search}
-          options={{
-            tabBarLabel: "Search",
-            tabBarIcon: ({ color, size }) => (
-              <IconIonOct name="search" size={size} color={color} />
-            ),
-            tabBarActiveTintColor: "#4C6FFF", 
             tabBarInactiveTintColor: !isDarkMode ? "#727D73" : "#F5F5F5",
           }}
         />

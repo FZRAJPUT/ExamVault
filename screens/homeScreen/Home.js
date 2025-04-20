@@ -87,9 +87,9 @@ const Home = () => {
             ExamVault
           </Text>
         </View>
-        <View style={styles.featuredPdfGrid}>
+        {/* <View style={styles.featuredPdfGrid}>
           {featuredPDFs.map(renderFeaturedPDFItem)}
-        </View>
+        </View> */}
 
         {/* <Text
           style={[styles.sectionTitle, { color: isDarkMode ? COLORS.textDark : COLORS.textLight }]}

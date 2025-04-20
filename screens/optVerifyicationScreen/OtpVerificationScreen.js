@@ -35,7 +35,6 @@ const OtpVerificationScreen = ({ navigation }) => {
       const data = await response.json();
       setLoading(false);
       if (data.success) {
-        Alert.alert("Success", "OTP verified successfully!");
         navigation.replace("Main");
       } else {
         Alert.alert("Error", data.message || "OTP verification failed.");

@@ -1,6 +1,5 @@
 import axios from "axios";
-import { createContext, useEffect, useState } from "react";
-import { Appearance } from "react-native";
+import { createContext, useState } from "react";
 import { EXPO_API_URL } from "@env";
 
 export const StoreContext = createContext(null);
@@ -29,13 +28,11 @@ const StoreContextProvider = (props) => {
   const getDetails = async (email) => {
     try {
       const response = await axios.post(`${EXPO_API_URL}/user/details`, { email });
-      
       if (response.data.success) {
-        console.log(response.data.details);
         setDetails(response.data.details);
       }
     } catch (error) {
-      console.log(error.message);
+      Alert.alert("Error", error.message);
     }
   };
 
