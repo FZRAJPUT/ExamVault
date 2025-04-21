@@ -19,10 +19,16 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.fz_rajput.ExamVault"
     },
     "web": {
       "favicon": "./assets/icon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "885d6aa4-fdb1-401f-bb0c-39da9eb050f6"
+      }
     }
   }
 }
