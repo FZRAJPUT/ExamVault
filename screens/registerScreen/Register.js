@@ -18,7 +18,6 @@ import {
 import { Picker } from "@react-native-picker/picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-import { EXPO_API_URL } from "@env";
 import { StoreContext } from "../../context/storeContext";
 
 const { width, height } = Dimensions.get("window");
@@ -44,13 +43,15 @@ export default function RegisterScreen({ navigation }) {
 
     setIsLoading(true);
     try {
-      const response = await axios.post(`${EXPO_API_URL}/user/register`, formData);
+      const response = await axios.post(`https://examvaultserver.onrender.com/user/register`, formData);
       if (response.data.success) {
         await AsyncStorage.setItem(
           "userInfo",
           JSON.stringify({
-            isRegistered: true,
-            email:formData.email
+            isRegistered: false,
+            email: formData.email,
+            fullname: formData.fullname,
+            branch: formData.branch
           })
         );
         setEmail_otp(formData.email)

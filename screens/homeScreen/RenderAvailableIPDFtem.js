@@ -265,7 +265,7 @@ const AvailablePDFItem = ({ isDarkMode }) => {
 
   const getFiles = async () => {
     try {
-      const response = await axios.get(`${EXPO_API_PDF}/files`);
+      const response = await axios.get(`https://upload-pdf-g77m.onrender.com/files`);
       if (response.data && response.data.files && Array.isArray(response.data.files)) {
         setFiles(response.data.files);
         setFilteredFiles(response.data.files);

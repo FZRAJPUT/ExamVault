@@ -8,7 +8,6 @@ import {
   StyleSheet,
   Alert,
 } from "react-native";
-import { EXPO_API_URL } from "@env";
 import { StoreContext } from "../../context/storeContext";
 
 const OtpVerificationScreen = ({ navigation }) => {
@@ -27,7 +26,7 @@ const OtpVerificationScreen = ({ navigation }) => {
       console.log(email_otp);
       let email = email_otp
       setLoading(true);
-      const response = await fetch(`${EXPO_API_URL}/user/verify`, {
+      const response = await fetch(`https://examvaultserver.onrender.com/user/verify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, otp }),
@@ -35,6 +34,22 @@ const OtpVerificationScreen = ({ navigation }) => {
       const data = await response.json();
       setLoading(false);
       if (data.success) {
+        // Update user info to mark as registered
+        try {
+          const userInfo = await AsyncStorage.getItem("userInfo");
+          if (userInfo) {
+            const parsed = JSON.parse(userInfo);
+            await AsyncStorage.setItem(
+              "userInfo",
+              JSON.stringify({
+                ...parsed,
+                isRegistered: true
+              })
+            );
+          }
+        } catch (error) {
+          console.error("Error updating user info:", error);
+        }
         navigation.replace("Main");
       } else {
         Alert.alert("Error", data.message || "OTP verification failed.");

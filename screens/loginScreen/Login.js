@@ -12,7 +12,6 @@ import {
   Dimensions,
   ActivityIndicator,
 } from "react-native";
-import { EXPO_API_URL } from "@env";
 import { StoreContext } from "../../context/storeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -35,7 +34,7 @@ const LoginScreen = ({ navigation }) => {
       }
     setIsLoading(true)
     try {
-      const response = await axios.post(`${EXPO_API_URL}/user/details`, {
+      const response = await axios.post(`https://examvaultserver.onrender.com/user/details`, {
         email,
       });
 
@@ -44,7 +43,8 @@ const LoginScreen = ({ navigation }) => {
           "userInfo",
           JSON.stringify({
             isRegistered: true,
-            details:response.data.details
+            email: email,
+            details: response.data.details
           }));
         setDetails(response.data.details);
         navigation.navigate("Main");

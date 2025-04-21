@@ -1,6 +1,6 @@
 import axios from "axios";
 import { createContext, useState } from "react";
-import { EXPO_API_URL } from "@env";
+import { Alert } from "react-native";
 
 export const StoreContext = createContext(null);
 
@@ -8,31 +8,19 @@ const StoreContextProvider = (props) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [details, setDetails] = useState(null);
   const [email_otp, setEmail_otp] = useState("");
-
-  // const getDeviceTheme = () => {
-  //   const colorScheme = Appearance.getColorScheme();
-  //   return colorScheme === "dark" ? true : false;
-  // };
-
-  // useEffect(() => {
-  //   setIsDarkMode(getDeviceTheme());
-  //   const listener = Appearance.addChangeListener(() => {
-  //     setIsDarkMode(getDeviceTheme());
-  //   });
-
-  //   return () => {
-  //     listener.remove();
-  //   };
-  // }, []);
-
   const getDetails = async (email) => {
     try {
-      const response = await axios.post(`${EXPO_API_URL}/user/details`, { email });
+      const response = await axios.post(`https://examvaultserver.onrender.com/user/details`, { email });
       if (response.data.success) {
         setDetails(response.data.details);
+        return response.data.details;
+      } else {
+        throw new Error(response.data.message || "Failed to get user details");
       }
     } catch (error) {
-      Alert.alert("Error", error.message);
+      console.error("Error fetching user details:", error);
+      Alert.alert("Error", error.message || "Failed to get user details");
+      return null;
     }
   };
 

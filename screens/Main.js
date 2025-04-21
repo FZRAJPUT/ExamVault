@@ -31,7 +31,7 @@ const CustomDrawerContent = (props) => {
 };
 
 export default function Main({navigation}) {
-  const { isDarkMode, getDetails } = useContext(StoreContext);
+  const { isDarkMode, getDetails, setDetails } = useContext(StoreContext);
 
   useEffect(() => {
     const checkFirstTimeUser = async () => {
@@ -39,9 +39,26 @@ export default function Main({navigation}) {
         const userInfo = await AsyncStorage.getItem("userInfo");
         let parsed = null;
         if (userInfo) {
-          parsed = JSON.parse(userInfo);
-          getDetails(parsed.email);
-          parsed.isRegistered ? navigation.navigate("Main") : navigation.navigate("Register");
+          try {
+            parsed = JSON.parse(userInfo);
+            
+            // Check if we have details directly (from Login) or need to get them (from Register)
+            if (parsed.details) {
+              // User info from Login screen
+              setDetails(parsed.details);
+              navigation.navigate("Main");
+            } else if (parsed.email) {
+              // User info from Register screen
+              await getDetails(parsed.email);
+              parsed.isRegistered ? navigation.navigate("Main") : navigation.navigate("Register");
+            } else {
+              throw new Error("Invalid user info format");
+            }
+          } catch (parseError) {
+            console.error("Error parsing user info:", parseError);
+            await AsyncStorage.removeItem("userInfo");
+            navigation.navigate("Login");
+          }
         } else {
           navigation.navigate("Login");
         }
