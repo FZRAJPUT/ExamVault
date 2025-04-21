@@ -26,7 +26,6 @@ import * as MediaLibrary from 'expo-media-library';
 const AvailablePDFItem = ({ isDarkMode }) => {
   const [files, setFiles] = useState([]);
   const [filteredFiles, setFilteredFiles] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
   const [savedFiles, setSavedFiles] = useState([]);
@@ -266,7 +265,6 @@ const AvailablePDFItem = ({ isDarkMode }) => {
 
   const getFiles = async () => {
     try {
-      setLoading(true);
       const response = await axios.get(`${EXPO_API_PDF}/files`);
       if (response.data && response.data.files && Array.isArray(response.data.files)) {
         setFiles(response.data.files);
@@ -287,13 +285,22 @@ const AvailablePDFItem = ({ isDarkMode }) => {
       }
     } catch (error) {
       setError("Failed to load files. Please try again later.");
-    } finally {
-      setLoading(false);
     }
   };
 
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    getFiles().finally(() => {
+      setRefreshing(false);
+    });
+  }, []);
+
   useEffect(() => {
-    getFiles();
+    // Initial data loading
+    setRefreshing(true);
+    getFiles().finally(() => {
+      setRefreshing(false);
+    });
   }, []);
 
   useEffect(() => {
@@ -334,11 +341,6 @@ const AvailablePDFItem = ({ isDarkMode }) => {
     setShowFilterModal(false);
   };
 
-  const onRefresh = React.useCallback(() => {
-    setRefreshing(true);
-    getFiles().finally(() => setRefreshing(false));
-  }, []);
-
   if (error) {
     return (
       <Text style={{ padding: 20, color: "red" }}>{error}</Text>
@@ -377,10 +379,8 @@ const AvailablePDFItem = ({ isDarkMode }) => {
         </View>
       </View>
 
-      {loading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="40" color="#4a6cf7" />
-        </View>
+      {error ? (
+        <Text style={{ padding: 20, color: "red" }}>{error}</Text>
       ) : (
         <ScrollView
           showsVerticalScrollIndicator={false}
@@ -718,12 +718,6 @@ const styles = StyleSheet.create({
   },
   darkSubText: {
     color: "#9CA3AF",
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 50,
   },
   noResultsContainer: {
     padding: 20,
