@@ -51,13 +51,6 @@ const Home = () => {
     }
   };
 
-  const featuredPDFs = [
-    { title: "Computer Science PYQs", type: "pyq" },
-    { title: "Mechanical PYQs", type: "pyq" },
-    { title: "Civil PYQs", type: "pyq" },
-    { title: "Electrical PYQs", type: "pyq" },
-  ];
-
   const renderFeaturedPDFItem = (item, index) => (
     <TouchableOpacity
       key={index}
@@ -80,22 +73,13 @@ const Home = () => {
       style={[styles.container, { backgroundColor: isDarkMode ? COLORS.darkBg : COLORS.lightBg }]}
     >
       {isFirstVisit && <WelcomePopup />}
-        <View style={styles.header}>
+        {/* <View style={styles.header}>
           <Text
             style={[styles.sectionTitle, { color: isDarkMode ? COLORS.textDark : COLORS.textLight }]}
           >
             ExamVault
           </Text>
-        </View>
-        {/* <View style={styles.featuredPdfGrid}>
-          {featuredPDFs.map(renderFeaturedPDFItem)}
         </View> */}
-
-        {/* <Text
-          style={[styles.sectionTitle, { color: isDarkMode ? COLORS.textDark : COLORS.textLight }]}
-        >
-          All Available PDFs
-        </Text> */}
         <AvailablePDFItem />
     </View>
   );
@@ -113,7 +97,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 16,
-    marginTop: 24,
   },
   sectionTitle: {
     fontSize: 22,

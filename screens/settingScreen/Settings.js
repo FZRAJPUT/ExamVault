@@ -1,6 +1,6 @@
-import { StyleSheet,Alert, Text, View, ScrollView, Switch, TouchableOpacity } from "react-native";
+import { StyleSheet,Alert, Text, View, Switch, TouchableOpacity } from "react-native";
 import React, { useContext } from "react";
-import { Moon, Sun, HelpCircle, Info, MailIcon, UserRoundPen, LogOut, Bookmark, Heart } from "lucide-react-native";
+import { HelpCircle, Info, MailIcon, UserRoundPen, LogOut, Bookmark } from "lucide-react-native";
 import { StoreContext } from "../../context/storeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -26,21 +26,6 @@ export const Settings = ({ navigation }) => {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.backgroundColor }]}>
-      <View style={[styles.top, { backgroundColor: theme.topBackgroundColor }]}>
-        <Text style={[styles.headerText, { color: theme.headerTextColor }]}>Settings</Text>
-      </View>
-
-      {/* <ScrollView style={styles.main}> */}
-        <View style={styles.section}>
-          {/* <Text style={[styles.sectionTitle, { color: theme.sectionTitleColor }]}>Appearance</Text>
-          {renderSettingItem(
-            isDarkMode ? <Sun size={24} color={theme.iconColor} /> : <Moon size={24} color={theme.iconColor} />,
-            isDarkMode ? "Light Mode" : "Dark Mode",
-            toggleDarkMode,
-            true,
-            isDarkMode
-          )} */}
-        </View>
 
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: theme.sectionTitleColor }]}>Account</Text>
@@ -93,30 +78,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  top: {
-    height: 80,
-    width: "100%",
-    flexDirection: "row",
-    alignItems: "flex-end",
-    justifyContent: "flex-start",
-    paddingBottom: 15,
-    paddingLeft: 10,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
-  },
-  headerText: {
-    fontSize: 20,
-    fontWeight: "bold",
-  },
   main: {
     flex: 1,
     paddingHorizontal:16
   },
   section: {
     marginBottom: 18,
-    paddingHorizontal:16
+    paddingHorizontal:16,
+    paddingTop:15
   },
   sectionTitle: {
     fontSize: 18,

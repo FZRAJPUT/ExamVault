@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { View, Text, Image, StyleSheet, ScrollView } from 'react-native';
 import { StoreContext } from '../../context/storeContext';
 import { User, Mail, GraduationCap, MapPin} from 'lucide-react-native';
@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   bio: {
-    fontSize: 16,
+    fontSize: 14,
     textAlign: 'center',
     paddingHorizontal: 20,
   },

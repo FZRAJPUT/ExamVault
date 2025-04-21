@@ -11,17 +11,23 @@ import {
   Modal,
   Platform,
   Keyboard,
+  PermissionsAndroid,
+  Linking,
+  Animated,
+  RefreshControl,
 } from "react-native";
-import { FileText, Download, RefreshCcw, Bookmark, Search, Filter, X } from "lucide-react-native";
+import { Download, Bookmark, Search, Filter, X, CheckCircle } from "lucide-react-native";
 import axios from "axios";
 import { EXPO_API_PDF } from "@env";
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
+import * as MediaLibrary from 'expo-media-library';
 
 const AvailablePDFItem = ({ isDarkMode }) => {
   const [files, setFiles] = useState([]);
   const [filteredFiles, setFilteredFiles] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
   const [savedFiles, setSavedFiles] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -37,6 +43,13 @@ const AvailablePDFItem = ({ isDarkMode }) => {
     subjects: []
   });
   const [keyboardHeight, setKeyboardHeight] = useState(0);
+  const [storagePermissionGranted, setStoragePermissionGranted] = useState(false);
+  const [mediaLibraryPermissionGranted, setMediaLibraryPermissionGranted] = useState(false);
+  const [downloadProgress, setDownloadProgress] = useState(0);
+  const [downloadingFile, setDownloadingFile] = useState(null);
+  const [showDownloadComplete, setShowDownloadComplete] = useState(false);
+  const [completedFileName, setCompletedFileName] = useState("");
+  const fadeAnim = React.useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     const keyboardWillShowListener = Keyboard.addListener(
@@ -49,7 +62,7 @@ const AvailablePDFItem = ({ isDarkMode }) => {
     const keyboardWillHideListener = Keyboard.addListener(
       Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
       () => {
-        setKeyboardHeight(0);
+        setKeyboardHeight(0)
       }
     );
 
@@ -59,54 +72,185 @@ const AvailablePDFItem = ({ isDarkMode }) => {
     };
   }, []);
 
+  // Request permissions once when component mounts
+  useEffect(() => {
+    const requestPermissions = async () => {
+      // Request storage permission for Android
+      if (Platform.OS === 'android') {
+        try {
+          const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+            {
+              title: "Storage Permission",
+              message: "App needs access to storage to download files",
+              buttonNeutral: "Ask Me Later",
+              buttonNegative: "Cancel",
+              buttonPositive: "OK"
+            }
+          );
+          setStoragePermissionGranted(granted === PermissionsAndroid.RESULTS.GRANTED);
+        } catch (err) {
+          console.error('Storage permission error:', err);
+        }
+      }
+
+      // Request media library permission
+      try {
+        const { status } = await MediaLibrary.requestPermissionsAsync();
+        setMediaLibraryPermissionGranted(status === 'granted');
+      } catch (err) {
+        console.error('Media library permission error:', err);
+      }
+    };
+
+    requestPermissions();
+  }, []);
+
+  // Function to show download complete notification
+  const showDownloadCompleteNotification = (filename) => {
+    setCompletedFileName(filename);
+    setShowDownloadComplete(true);
+    
+    // Animate the notification
+    Animated.sequence([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.delay(2000),
+      Animated.timing(fadeAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      setShowDownloadComplete(false);
+    });
+  };
+
   const handleDownload = async (url, filename) => {
     try {
-      setLoading(true);
-      
-      const timestamp = new Date().getTime();
-      const safeFilename = filename.replace(/[^a-zA-Z0-9.-]/g, '_');
-      const fileUri = FileSystem.documentDirectory + `${safeFilename}_${timestamp}.pdf`;
-      
-      const downloadResumable = FileSystem.createDownloadResumable(
-        url,
-        fileUri
-      );
-      
-      const { uri } = await downloadResumable.downloadAsync();
-      
-      const isSharingAvailable = await Sharing.isAvailableAsync();
-      
-      if (isSharingAvailable) {
-        try {
-          await new Promise(resolve => setTimeout(resolve, 500));
-          
-          await Sharing.shareAsync(uri, {
-            mimeType: 'application/pdf',
-            dialogTitle: `Share ${filename}`,
-            UTI: 'com.adobe.pdf'
-          });
-        } catch (shareError) {
-          Alert.alert(
-            'Sharing Error', 
-            'Could not share the file. The file has been downloaded and saved to your device.',
-            [{ text: 'OK' }]
-          );
-        }
-      } else {
+      // Check if the file is a document file (PDF)
+      if (!filename.toLowerCase().endsWith('.pdf')) {
         Alert.alert(
-          'Download Complete', 
-          `File saved to: ${uri}`,
+          'Invalid File Type', 
+          'The selected file is not a PDF document.',
           [{ text: 'OK' }]
         );
+        return;
+      }
+      
+      // Check if permissions are granted
+      if (Platform.OS === 'android' && !storagePermissionGranted) {
+        Alert.alert(
+          'Permission Required',
+          'Storage permission is required to download files. Please grant permission in app settings.',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { 
+              text: 'Open Settings', 
+              onPress: () => {
+                if (Platform.OS === 'android') {
+                  Linking.openSettings();
+                }
+              }
+            }
+          ]
+        );
+        return;
+      }
+
+      if (!mediaLibraryPermissionGranted) {
+        Alert.alert(
+          'Permission Required',
+          'Media library permission is required to save files. Please grant permission in app settings.',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { 
+              text: 'Open Settings', 
+              onPress: () => {
+                if (Platform.OS === 'android') {
+                  Linking.openSettings();
+                }
+              }
+            }
+          ]
+        );
+        return;
+      }
+      
+      // Set downloading file
+      setDownloadingFile(filename);
+      setDownloadProgress(0);
+      
+      // Download the file
+      const timestamp = new Date().getTime();
+      const safeFilename = filename.replace(/[^a-zA-Z0-9.-]/g, '_');
+      
+      // For Android, download to Downloads folder
+      if (Platform.OS === 'android') {
+        const downloadDir = FileSystem.documentDirectory + 'downloads/';
+        
+        // Create downloads directory if it doesn't exist
+        const dirInfo = await FileSystem.getInfoAsync(downloadDir);
+        if (!dirInfo.exists) {
+          await FileSystem.makeDirectoryAsync(downloadDir, { intermediates: true });
+        }
+        
+        const fileUri = downloadDir + `${safeFilename}_${timestamp}.pdf`;
+        
+        const downloadResumable = FileSystem.createDownloadResumable(
+          url,
+          fileUri,
+          {},
+          (downloadProgress) => {
+            const progress = downloadProgress.totalBytesWritten / downloadProgress.totalBytesExpectedToWrite;
+            setDownloadProgress(progress);
+          }
+        );
+        
+        const { uri } = await downloadResumable.downloadAsync();
+        
+        // Save to media library
+        const asset = await MediaLibrary.createAssetAsync(uri);
+        await MediaLibrary.createAlbumAsync('ExamVault', asset, false);
+        
+        // Show download complete notification
+        showDownloadCompleteNotification(`${safeFilename}_${timestamp}.pdf`);
+      } else {
+        // For iOS, use the document directory
+        const fileUri = FileSystem.documentDirectory + `${safeFilename}_${timestamp}.pdf`;
+        
+        const downloadResumable = FileSystem.createDownloadResumable(
+          url,
+          fileUri,
+          {},
+          (downloadProgress) => {
+            const progress = downloadProgress.totalBytesWritten / downloadProgress.totalBytesExpectedToWrite;
+            setDownloadProgress(progress);
+          }
+        );
+        
+        const { uri } = await downloadResumable.downloadAsync();
+        
+        // Save to media library
+        const asset = await MediaLibrary.createAssetAsync(uri);
+        await MediaLibrary.createAlbumAsync('ExamVault', asset, false);
+        
+        // Show download complete notification
+        showDownloadCompleteNotification(`${safeFilename}_${timestamp}.pdf`);
       }
     } catch (error) {
+      console.error('Download error:', error);
       Alert.alert(
         'Download Failed', 
         'Failed to download the file. Please try again later.',
         [{ text: 'OK' }]
       );
     } finally {
-      setLoading(false);
+      setDownloadingFile(null);
+      setDownloadProgress(0);
     }
   };
 
@@ -190,6 +334,11 @@ const AvailablePDFItem = ({ isDarkMode }) => {
     setShowFilterModal(false);
   };
 
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    getFiles().finally(() => setRefreshing(false));
+  }, []);
+
   if (error) {
     return (
       <Text style={{ padding: 20, color: "red" }}>{error}</Text>
@@ -198,6 +347,7 @@ const AvailablePDFItem = ({ isDarkMode }) => {
 
   return (
     <View style={{ flex: 1 }}>
+
       <View style={styles.available}>
         <View style={styles.headerActions}>
           <TouchableOpacity
@@ -205,12 +355,6 @@ const AvailablePDFItem = ({ isDarkMode }) => {
             style={[styles.filterButton, isDarkMode && styles.darkFilterButton]}
           >
             <Filter size={16} color={"#fff"} />
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={getFiles}
-            style={[styles.refreshButton, isDarkMode && styles.darkRefreshButton]}
-          >
-            <RefreshCcw size={16} color={"#fff"} />
           </TouchableOpacity>
         </View>
       </View>
@@ -245,6 +389,14 @@ const AvailablePDFItem = ({ isDarkMode }) => {
             padding: 6,
             paddingBottom: keyboardHeight > 0 ? keyboardHeight + 10 : 10
           }}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={["#4a6cf7"]}
+              tintColor={isDarkMode ? "#60A5FA" : "#4a6cf7"}
+            />
+          }
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="on-drag"
         >
@@ -294,16 +446,45 @@ const AvailablePDFItem = ({ isDarkMode }) => {
                     onPress={() => handleDownload(item.cloudinaryUrl, item.filename)}
                     style={styles.actionButton}
                   >
-                    <Download
-                      size={18}
-                      color={isDarkMode ? "#60A5FA" : "#3B82F6"}
-                    />
+                    
+                      <Download
+                        size={18}
+                        color={isDarkMode ? "#60A5FA" : "#3B82F6"}
+                      />
                   </TouchableOpacity>
                 </View>
               </View>
             ))
           )}
         </ScrollView>
+      )}
+
+      {/* Download Progress Indicator */}
+      {downloadingFile && (
+        <View style={styles.downloadProgressContainer}>
+          <View style={styles.downloadProgressContent}>
+            <ActivityIndicator size="small" color="#4a6cf7" style={styles.downloadSpinner} />
+            <View style={styles.downloadTextContainer}>
+              <Text style={styles.downloadingText}>Downloading {downloadingFile}</Text>
+              <View style={styles.progressBarContainer}>
+                <View style={[styles.progressBar, { width: `${downloadProgress * 100}%` }]} />
+              </View>
+              <Text style={styles.progressText}>{Math.round(downloadProgress * 100)}%</Text>
+            </View>
+          </View>
+        </View>
+      )}
+      
+      {/* Download Complete Notification */}
+      {showDownloadComplete && (
+        <Animated.View style={[styles.downloadCompleteContainer, { opacity: fadeAnim }]}>
+          <View style={styles.downloadCompleteContent}>
+            <CheckCircle size={24} color="#10B981" />
+            <Text style={styles.downloadCompleteText}>
+              {completedFileName} downloaded successfully
+            </Text>
+          </View>
+        </Animated.View>
       )}
 
       <Modal
@@ -443,30 +624,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-end",
   },
-  refreshButton: {
-    backgroundColor: "#4a6cf7",
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    borderRadius: 6,
-    alignSelf: "center",
-  },
   filterButton: {
     backgroundColor: "#4a6cf7",
     paddingVertical: 6,
     paddingHorizontal: 10,
     borderRadius: 6,
     alignSelf: "center",
-    marginRight: 8,
-  },
-  darkRefreshButton: {
-    backgroundColor: "#1E3A8A",
   },
   darkFilterButton: {
     backgroundColor: "#1E3A8A",
   },
   searchContainer: {
     marginBottom: 12,
-    paddingHorizontal: 4,
+    paddingHorizontal: 2,
   },
   searchInputContainer: {
     flexDirection: "row",
@@ -474,7 +644,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#EEEEEE",
     borderRadius: 8,
     paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingVertical: 4,
   },
   darkSearchInput: {
     backgroundColor: "#374151",
@@ -650,6 +820,78 @@ const styles = StyleSheet.create({
   applyButtonText: {
     color: "#FFFFFF",
     fontWeight: "500",
+  },
+  downloadProgressContainer: {
+    position: 'absolute',
+    bottom: 20,
+    left: 20,
+    right: 20,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    zIndex: 1000,
+  },
+  downloadProgressContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  downloadSpinner: {
+    marginRight: 12,
+  },
+  downloadTextContainer: {
+    flex: 1,
+  },
+  downloadingText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: 4,
+  },
+  progressBarContainer: {
+    height: 4,
+    backgroundColor: '#E5E7EB',
+    borderRadius: 2,
+    marginBottom: 4,
+  },
+  progressBar: {
+    height: 4,
+    backgroundColor: '#4a6cf7',
+    borderRadius: 2,
+  },
+  progressText: {
+    fontSize: 12,
+    color: '#6B7280',
+    textAlign: 'right',
+  },
+  downloadCompleteContainer: {
+    position: 'absolute',
+    bottom: 20,
+    left: 20,
+    right: 20,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    zIndex: 1000,
+  },
+  downloadCompleteContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  downloadCompleteText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#374151',
+    marginLeft: 12,
   },
 });
 
